@@ -80,13 +80,20 @@
                     oninput="searchFood(this.value)">
                 <div id="search-results" class="search-results hidden absolute z-10 w-full bg-white border rounded-xl mt-1 shadow-2xl"></div>
             </div>
+            
             <div class="text-center text-[10px] text-gray-300 font-bold uppercase tracking-widest">or browse by category</div>
+            
             <select id="category-select" class="w-full p-3 bg-gray-50 border rounded-xl text-sm">
                 <option value="" disabled selected>Select Category</option>
             </select>
-            <select id="food-select" class="w-full p-3 bg-gray-50 border rounded-xl text-sm" disabled>
-                <option value="" disabled selected>Select Item</option>
-            </select>
+            
+            <div class="relative">
+                <select id="food-select" class="w-full p-3 bg-gray-50 border rounded-xl text-sm transition-colors duration-300" disabled>
+                    <option value="" disabled selected>Select Item</option>
+                </select>
+                <div id="browse-preview" class="hidden mt-2 p-2 rounded-lg text-center font-bold text-[10px] uppercase tracking-wider"></div>
+            </div>
+
             <button onclick="addFood()" id="add-food-btn" class="w-full bg-gray-800 text-white font-bold py-3 rounded-xl disabled:opacity-50" disabled>Add to Log</button>
         </section>
 
@@ -196,7 +203,7 @@
                     const kClass = getKClass(food.k);
                     html += `<div onclick='selectSearchItem(${JSON.stringify(food)})' class="p-3 border-b flex justify-between items-center active:bg-gray-100">
                         <div>
-                            <div class="font-bold text-sm">${food.name}</div>
+                            <div class="font-bold text-sm text-gray-800">${food.name}</div>
                             <div class="text-[10px] text-gray-500">K: ${food.k}mg | P: ${food.p}mg | F: ${food.f}ml</div>
                         </div>
                         <span class="text-[9px] font-black px-2 py-1 rounded-full ${kClass}">${getKLabel(food.k)}</span>
@@ -235,14 +242,47 @@
         }
 
         document.getElementById('category-select').onchange = (e) => {
-            const fs = document.getElementById('food-select'); fs.innerHTML = '<option disabled selected>Select Item</option>'; fs.disabled = false;
-            foodDatabase[e.target.value].forEach((f, i) => { const o = document.createElement('option'); o.value = i; o.textContent = f.name; fs.appendChild(o); });
+            const fs = document.getElementById('food-select'); 
+            fs.innerHTML = '<option disabled selected>Select Item</option>'; 
+            fs.disabled = false;
+            fs.className = "w-full p-3 bg-gray-50 border rounded-xl text-sm transition-colors duration-300";
+            document.getElementById('browse-preview').classList.add('hidden');
+            
+            foodDatabase[e.target.value].forEach((f, i) => { 
+                const o = document.createElement('option'); 
+                o.value = i; 
+                o.textContent = f.name; 
+                fs.appendChild(o); 
+            });
         };
-        document.getElementById('food-select').onchange = () => document.getElementById('add-food-btn').disabled = false;
+
+        document.getElementById('food-select').onchange = (e) => {
+            const cat = document.getElementById('category-select').value;
+            const food = foodDatabase[cat][e.target.value];
+            const preview = document.getElementById('browse-preview');
+            const fs = document.getElementById('food-select');
+            
+            document.getElementById('add-food-btn').disabled = false;
+            
+            // Show the Color Preview
+            preview.classList.remove('hidden');
+            preview.textContent = getKLabel(food.k) + `: ${food.k}mg Potassium`;
+            
+            // Apply color to the preview bar
+            if (food.k < 150) { preview.className = "mt-2 p-2 rounded-lg text-center font-bold text-[10px] uppercase tracking-wider k-green"; }
+            else if (food.k <= 200) { preview.className = "mt-2 p-2 rounded-lg text-center font-bold text-[10px] uppercase tracking-wider k-yellow"; }
+            else { preview.className = "mt-2 p-2 rounded-lg text-center font-bold text-[10px] uppercase tracking-wider k-red"; }
+        };
 
         function addFood() {
-            const f = foodDatabase[document.getElementById('category-select').value][document.getElementById('food-select').value];
-            dailyLog.push({ ...f, type: 'food', id: Date.now() }); saveAll();
+            const cat = document.getElementById('category-select').value;
+            const f = foodDatabase[cat][document.getElementById('food-select').value];
+            dailyLog.push({ ...f, type: 'food', id: Date.now() }); 
+            saveAll();
+            // Reset Browse UI
+            document.getElementById('food-select').selectedIndex = 0;
+            document.getElementById('browse-preview').classList.add('hidden');
+            document.getElementById('add-food-btn').disabled = true;
         }
 
         function addBinder() {
@@ -280,58 +320,5 @@
 
         function updateBar(id, v, m) {
             const pct = Math.min((v/m)*100, 100); const b = document.getElementById(id); b.style.width = pct+'%';
-            b.className = `progress-fill transition-all ${pct >= 100 ? 'bg-red-500' : pct > 80 ? 'bg-yellow-400' : id === 'bar-f' ? 'bg-teal-400' : id === 'bar-k' ? 'bg-blue-500' : 'bg-purple-500'}`;
-        }
+            b.className = `progress-fill transition-all ${pct >= 100 ? 'bg-red-500' : pct > 80 ? 'bg-yellow-400' : id === 'bar-f'
 
-        function renderLog() {
-            const list = document.getElementById('log-list'); list.innerHTML = '';
-            if (dailyLog.length === 0) list.innerHTML = '<li class="text-center text-gray-400 py-6 italic text-sm">No entries yet.</li>';
-            dailyLog.slice().reverse().forEach(i => {
-                const li = document.createElement('li');
-                let colorClass = 'bg-white';
-                if (i.type === 'binder') colorClass = 'bg-green-50 border-l-4 border-green-400';
-                else if (i.k < 150) colorClass = 'k-green';
-                else if (i.k <= 200) colorClass = 'k-yellow';
-                else colorClass = 'k-red';
-
-                li.className = `p-3 rounded-xl shadow-sm flex justify-between items-center ${colorClass} mb-2`;
-                li.innerHTML = `<div><div class="font-bold text-sm text-gray-800">${i.type === 'binder' ? '💊 '+i.name : i.name}</div>
-                    <div class="text-[10px] opacity-70">${i.type === 'food' ? `K: ${i.k} P: ${i.p} F: ${i.f}` : `Binds: ${Math.abs(i.p)}mg P`}</div></div>
-                    <button onclick="removeItem(${i.id})" class="text-gray-400 px-2">✕</button>`;
-                list.appendChild(li);
-            });
-        }
-
-        function renderHistory() {
-            const hl = document.getElementById('history-list'); hl.innerHTML = '';
-            const dates = Object.keys(history).sort().reverse().slice(0, 7);
-            dates.forEach(date => {
-                const data = history[date];
-                const div = document.createElement('div');
-                div.className = "bg-white p-3 rounded-xl text-sm border-l-4 border-purple-400 shadow-sm";
-                div.innerHTML = `<div class="font-bold text-gray-400 mb-1">${date === todayKey ? 'Today' : date}</div>
-                    <div class="flex justify-between"><span>K: <b>${data.k}</b></span> <span>P: <b>${data.p}</b></span> <span>F: <b>${data.f}ml</b></span></div>`;
-                hl.appendChild(div);
-            });
-        }
-
-        function exportData() {
-            let report = `BEAN DIALYSIS REPORT\nGenerated: ${new Date().toLocaleString()}\n\n`;
-            Object.keys(history).sort().reverse().slice(0,7).forEach(d => {
-                report += `${d}: K: ${history[d].k}mg, P: ${history[d].p}mg, Fluid: ${history[d].f}ml\n`;
-            });
-            window.location.href = `mailto:?subject=Bean Dialysis Report&body=${encodeURIComponent(report)}`;
-        }
-
-        function removeItem(id) { dailyLog = dailyLog.filter(i => i.id !== id); saveAll(); }
-        function clearToday() { if(confirm("Clear today's entries?")) { dailyLog = []; saveAll(); } }
-        function saveSettings() {
-            limits = { k: parseInt(document.getElementById('limit-k').value) || 2000, p: parseInt(document.getElementById('limit-p').value) || 1000, f: parseInt(document.getElementById('limit-f').value) || 1000 };
-            localStorage.setItem('bean_limits', JSON.stringify(limits));
-            document.getElementById('disp-limit-k').textContent = limits.k; document.getElementById('disp-limit-p').textContent = limits.p; document.getElementById('disp-limit-f').textContent = limits.f;
-            updateTotals();
-        }
-        init();
-    </script>
-</body>
-</html>
