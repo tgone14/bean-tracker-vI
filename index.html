@@ -13,7 +13,7 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         
-        /* Updated Gradient to match Nano Banana image */
+        /* Premium Gradient */
         .bean-gradient { background: linear-gradient(135deg, #7c9aff 0%, #a881e6 100%); }
         
         .progress-bar-bg { background-color: #f1f5f9; border-radius: 9999px; height: 0.5rem; overflow: hidden; }
@@ -24,30 +24,19 @@
         
         .card { background: white; border-radius: 24px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; }
         
-        /* Dashboard Label Styling */
         .label-text { font-size: 0.75rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.025em; }
         .value-text { font-size: 0.75rem; font-weight: 700; color: #1e293b; }
 
-        /* Traffic Light Colors */
         .k-green { background-color: #f0fdf4; border-left: 4px solid #22c55e; }
         .k-yellow { background-color: #fefce8; border-left: 4px solid #eab308; }
         .k-red { background-color: #fef2f2; border-left: 4px solid #ef4444; }
-        .pill-green { background: #22c55e; color: white; }
-        .pill-yellow { background: #eab308; color: white; }
-        .pill-red { background: #ef4444; color: white; }
     </style>
 </head>
 <body class="pb-24">
 
     <header class="bean-gradient text-white pt-12 pb-10 px-6 shadow-md rounded-b-[40px] mb-6 text-center">
-        <div class="flex items-center justify-center space-x-3 mb-2">
-            <svg class="w-10 h-10 drop-shadow-md" viewBox="0 0 100 100" fill="white" xmlns="http://www.w3.org/2000/svg">
-                <path d="M75,50 c0,15 -12,28 -25,28 c-10,0 -18,-6 -22,-14 c-3,-6 -5,-13 -5,-21 c0,-19 15,-34 34,-34 c6,0 11,1 16,4 c4,2 6,6 6,10 V50z" opacity="0.9"/>
-                <path d="M25,45 c0,-12 8,-22 19,-25 c-4,5 -6,11 -6,18 c0,16 13,29 29,29 c4,0 8,-1 11,-2 c-3,11 -13,19 -25,19 c-15,0 -28,-12 -28,-28 V45z" />
-            </svg>
-            <h1 class="text-5xl font-extrabold tracking-tight">Bean</h1>
-        </div>
-        <p class="text-sm font-medium opacity-80" id="current-date"></p>
+        <h1 class="text-5xl font-extrabold tracking-tight">Bean</h1>
+        <p class="text-sm font-medium opacity-80 mt-2" id="current-date"></p>
     </header>
 
     <main class="max-w-md mx-auto p-4 space-y-6">
@@ -96,11 +85,9 @@
                     oninput="searchFood(this.value)">
                 <div id="search-results" class="search-results hidden absolute z-10 w-full bg-white border rounded-2xl mt-2 shadow-xl border-slate-100 overflow-hidden"></div>
             </div>
-            
             <select id="category-select" class="w-full p-4 bg-slate-50 border-none rounded-2xl text-sm font-semibold text-slate-700 outline-none" onchange="renderCategoryItems(this.value)">
                 <option value="" disabled selected>Browse Categories</option>
             </select>
-            
             <div id="category-items-list" class="space-y-2 mt-2 max-h-80 overflow-y-auto hidden"></div>
         </section>
 
@@ -109,13 +96,11 @@
                 <select id="binder-select" class="w-full p-4 bg-slate-50 border-none rounded-2xl text-sm font-semibold text-slate-700" onchange="checkBinderEnable()">
                     <option value="" disabled selected>Select Binder Type</option>
                 </select>
-                
                 <div class="flex items-center justify-center space-x-8 py-4">
                     <button onclick="changeQty(-1)" class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-600 text-2xl font-bold flex items-center justify-center active:scale-95 transition-transform">-</button>
                     <span id="binder-qty-display" class="text-4xl font-black text-slate-700 w-10">1</span>
                     <button onclick="changeQty(1)" class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-600 text-2xl font-bold flex items-center justify-center active:scale-95 transition-transform">+</button>
                 </div>
-
                 <button onclick="addBinder()" id="add-binder-btn" class="w-full bg-slate-800 text-white font-bold py-5 rounded-2xl shadow-lg active:scale-[0.98] transition-all disabled:opacity-20" disabled>Add <span id="btn-qty-label">1</span> Binder(s)</button>
             </div>
         </section>
@@ -126,218 +111,6 @@
 
         <section id="section-log">
             <div class="flex justify-between items-end mb-4 px-2">
-                <h2 class="text-xl font-bold text-slate-800">Today</h2>
-                <button onclick="clearToday()" class="text-[10px] text-red-400 font-black uppercase tracking-widest">Clear All</button>
-            </div>
-            <ul id="log-list" class="space-y-3"></ul>
-        </section>
-
-        <details class="bg-slate-100 p-4 rounded-3xl border border-slate-200">
-            <summary class="text-xs font-bold text-slate-500 cursor-pointer list-none text-center uppercase tracking-widest">Adjust Limits</summary>
-            <div class="grid grid-cols-3 gap-3 mt-4">
-                <div><label class="label-text block mb-1 text-center">K</label><input type="number" id="limit-k" class="w-full p-3 bg-white rounded-xl text-center font-bold text-slate-700" onchange="saveSettings()"></div>
-                <div><label class="label-text block mb-1 text-center">P</label><input type="number" id="limit-p" class="w-full p-3 bg-white rounded-xl text-center font-bold text-slate-700" onchange="saveSettings()"></div>
-                <div><label class="label-text block mb-1 text-center">Fluid</label><input type="number" id="limit-f" class="w-full p-3 bg-white rounded-xl text-center font-bold text-slate-700" onchange="saveSettings()"></div>
-            </div>
-        </details>
-    </main>
-
-    <script>
-        // Database same as before
-        const foodDatabase = {
-            "Fruits": [
-                { name: "Apple", k: 195, p: 20, f: 0 }, { name: "Banana", k: 422, p: 26, f: 0 }, 
-                { name: "Grapes (1c)", k: 288, p: 30, f: 0 }, { name: "Watermelon (1c)", k: 170, p: 15, f: 140 }, 
-                { name: "Blueberries (1c)", k: 114, p: 18, f: 0 }, { name: "Strawberries (1c)", k: 230, p: 35, f: 0 }, 
-                { name: "Peach", k: 179, p: 32.3, f: 0 }, { name: "Pear", k: 187, p: 20, f: 0 }, 
-                { name: "Pineapple (1/2c)", k: 113, p: 4, f: 0 }, { name: "Mango (1c)", k: 277, p: 23, f: 0 }, 
-                { name: "Orange", k: 255, p: 18, f: 0 }, { name: "Avocado (1c)", k: 708, p: 76, f: 0 }, 
-                { name: "Tangerine (Mandarin)", k: 166, p: 20, f: 0 }, { name: "Guava (1c)", k: 688, p: 66, f: 0 }, 
-                { name: "Papaya", k: 286, p: 16, f: 0 }, { name: "Cantaloupe (1c)", k: 251, p: 27, f: 0 }
-            ],
-            "Vegetables": [{ name: "Carrots", k: 180, p: 24, f: 0 }, { name: "Potato (Med)", k: 926, p: 121, f: 0 }, { name: "Green Beans", k: 90, p: 19, f: 0 }, { name: "Cucumber", k: 140, p: 20, f: 50 }, { name: "Broccoli (1c)", k: 290, p: 60, f: 0 }],
-            "Proteins": [{ name: "Chicken (3oz)", k: 220, p: 196, f: 0 }, { name: "Egg (1)", k: 69, p: 95, f: 0 }, { name: "Salmon (3oz)", k: 326, p: 214, f: 0 }, { name: "Beef (3oz)", k: 270, p: 200, f: 0 }, { name: "Tofu (1/2c)", k: 120, p: 120, f: 0 }],
-            "Dairy/Grains": [{ name: "Milk (1c)", k: 366, p: 232, f: 240 }, { name: "Rice (1c)", k: 55, p: 68, f: 0 }, { name: "White Bread", k: 30, p: 30, f: 0 }, { name: "Pasta (1c)", k: 60, p: 80, f: 0 }],
-            "Beverages": [{ name: "Water (8oz)", k: 0, p: 0, f: 240 }, { name: "Coffee (8oz)", k: 116, p: 7, f: 240 }, { name: "Cola (12oz)", k: 0, p: 40, f: 355 }, { name: "Tea (8oz)", k: 88, p: 0, f: 240 }, { name: "Orange Juice (8oz)", k: 496, p: 44, f: 240 }]
-        };
-
-        const binderDatabase = [
-            { name: "Calcium Carbonate (500mg)", bind: 19 }, { name: "Calcium Acetate (667mg)", bind: 30 },
-            { name: "Sevelamer HCl (800mg)", bind: 17 }, { name: "Lanthanum (500mg)", bind: 45 },
-            { name: "Lanthanum (750mg)", bind: 68 }, { name: "Velphoro (500mg)", bind: 130 }
-        ];
-
-        let dailyLog = JSON.parse(localStorage.getItem('bean_log')) || [];
-        let limits = JSON.parse(localStorage.getItem('bean_limits')) || { k: 2000, p: 1000, f: 1000 };
-        let history = JSON.parse(localStorage.getItem('bean_history')) || {};
-        let binderQty = 1;
-        const todayKey = new Date().toISOString().split('T')[0];
-
-        function changeQty(amt) {
-            binderQty = Math.max(1, binderQty + amt);
-            document.getElementById('binder-qty-display').textContent = binderQty;
-            document.getElementById('btn-qty-label').textContent = binderQty;
-        }
-
-        function getKClass(k) {
-            if (k < 150) return 'pill-green';
-            if (k <= 200) return 'pill-yellow';
-            return 'pill-red';
-        }
-
-        function searchFood(query) {
-            const resultsDiv = document.getElementById('search-results');
-            if (query.length < 2) { resultsDiv.classList.add('hidden'); return; }
-            let html = '';
-            Object.values(foodDatabase).flat().forEach(food => {
-                if (food.name.toLowerCase().includes(query.toLowerCase())) {
-                    const kClass = getKClass(food.k);
-                    html += `<div onclick='logFoodItem(${JSON.stringify(food)})' class="p-4 border-b border-slate-50 flex justify-between items-center active:bg-slate-50 cursor-pointer">
-                        <div>
-                            <div class="font-bold text-sm text-slate-800">${food.name}</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">K: ${food.k}mg | P: ${food.p}mg</div>
-                        </div>
-                        <div class="w-2 h-2 rounded-full ${kClass === 'pill-green' ? 'bg-emerald-400' : kClass === 'pill-yellow' ? 'bg-amber-400' : 'bg-rose-400'}"></div>
-                    </div>`;
-                }
-            });
-            if (html) { resultsDiv.innerHTML = html; resultsDiv.classList.remove('hidden'); }
-            else { resultsDiv.classList.add('hidden'); }
-        }
-
-        function renderCategoryItems(cat) {
-            const list = document.getElementById('category-items-list');
-            list.innerHTML = '';
-            list.classList.remove('hidden');
-            foodDatabase[cat].forEach(food => {
-                const div = document.createElement('div');
-                div.className = "p-4 bg-slate-50 rounded-2xl flex justify-between items-center active:scale-[0.98] transition-all cursor-pointer";
-                div.onclick = () => logFoodItem(food);
-                div.innerHTML = `
-                    <div>
-                        <div class="font-bold text-sm text-slate-800">${food.name}</div>
-                        <div class="text-[10px] text-slate-400 font-bold uppercase">K: ${food.k}mg | P: ${food.p}mg</div>
-                    </div>
-                    <div class="w-6 h-6 rounded-full flex items-center justify-center bg-white shadow-sm text-xs text-slate-400">+</div>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function logFoodItem(food) {
-            dailyLog.push({ ...food, type: 'food', id: Date.now() });
-            document.getElementById('food-search').value = '';
-            document.getElementById('search-results').classList.add('hidden');
-            document.getElementById('category-items-list').classList.add('hidden');
-            document.getElementById('category-select').selectedIndex = 0;
-            saveAll();
-        }
-
-        function init() {
-            document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-            Object.keys(foodDatabase).forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; document.getElementById('category-select').appendChild(o); });
-            binderDatabase.forEach((b, i) => { const o = document.createElement('option'); o.value = i; o.textContent = b.name; document.getElementById('binder-select').appendChild(o); });
-            document.getElementById('limit-k').value = limits.k; document.getElementById('limit-p').value = limits.p; document.getElementById('limit-f').value = limits.f;
-            document.getElementById('disp-limit-k').textContent = limits.k; document.getElementById('disp-limit-p').textContent = limits.p; document.getElementById('disp-limit-f').textContent = limits.f;
-            renderLog(); updateTotals();
-        }
-
-        function switchTab(t) {
-            ['food', 'binder', 'history'].forEach(tab => {
-                document.getElementById(`section-${tab}`).classList.toggle('hidden', t !== tab);
-                const btn = document.getElementById(`tab-${tab}`);
-                if(t === tab) { btn.classList.add('bg-white', 'shadow-sm', 'text-slate-800'); btn.classList.remove('text-slate-500'); }
-                else { btn.classList.remove('bg-white', 'shadow-sm', 'text-slate-800'); btn.classList.add('text-slate-500'); }
-            });
-            document.getElementById('section-log').classList.toggle('hidden', t === 'history');
-            if(t === 'history') renderHistory();
-        }
-
-        function checkBinderEnable() { document.getElementById('add-binder-btn').disabled = false; }
-
-        function addBinder() {
-            const b = binderDatabase[document.getElementById('binder-select').value];
-            dailyLog.push({ name: `${binderQty}x ${b.name}`, k: 0, p: -(b.bind * binderQty), f: 0, type: 'binder', id: Date.now() });
-            saveAll();
-            binderQty = 1; document.getElementById('binder-qty-display').textContent = 1; document.getElementById('btn-qty-label').textContent = 1;
-            document.getElementById('binder-select').selectedIndex = 0;
-            document.getElementById('add-binder-btn').disabled = true;
-        }
-
-        function saveAll() {
-            localStorage.setItem('bean_log', JSON.stringify(dailyLog));
-            let tk=0, tp=0, tf=0; dailyLog.forEach(i => { tk+=i.k; tp+=i.p; tf+=i.f; });
-            history[todayKey] = { k: tk, p: Math.max(0, tp), f: tf };
-            localStorage.setItem('bean_history', JSON.stringify(history));
-            renderLog(); updateTotals();
-        }
-
-        function updateTotals() {
-            let tk=0, tp=0, tf=0; dailyLog.forEach(i => { tk+=i.k; tp+=i.p; tf+=i.f; });
-            const netP = Math.max(0, tp);
-            document.getElementById('total-k').textContent = tk;
-            document.getElementById('total-p').textContent = netP;
-            document.getElementById('total-f').textContent = tf;
-            updateBar('bar-k', tk, limits.k); updateBar('bar-p', netP, limits.p); updateBar('bar-f', tf, limits.f);
-        }
-
-        function updateBar(id, v, m) {
-            const pct = Math.min((v/m)*100, 100); const b = document.getElementById(id); b.style.width = pct+'%';
-            if(pct >= 100) b.classList.add('bg-rose-500');
-        }
-
-        function renderLog() {
-            const list = document.getElementById('log-list'); list.innerHTML = '';
-            if (dailyLog.length === 0) list.innerHTML = '<li class="text-center text-slate-300 py-10 italic text-sm">No entries yet.</li>';
-            dailyLog.slice().reverse().forEach(i => {
-                const li = document.createElement('li');
-                let colorClass = 'bg-white';
-                if (i.type === 'binder') colorClass = 'bg-slate-800 text-white';
-                else if (i.k < 150) colorClass = 'k-green';
-                else if (i.k <= 200) colorClass = 'k-yellow';
-                else colorClass = 'k-red';
-
-                li.className = `p-4 rounded-3xl shadow-sm flex justify-between items-center ${colorClass} transition-all`;
-                li.innerHTML = `<div><div class="font-bold text-sm">${i.type === 'binder' ? '💊 '+i.name : i.name}</div>
-                    <div class="text-[10px] opacity-60 font-bold uppercase tracking-widest">${i.type === 'food' ? `K: ${i.k} P: ${i.p} F: ${i.f}` : `Binds: ${Math.abs(i.p)}mg P`}</div></div>
-                    <button onclick="removeItem(${i.id})" class="opacity-30 px-2 text-lg">✕</button>`;
-                list.appendChild(li);
-            });
-        }
-
-        function renderHistory() {
-            const hl = document.getElementById('history-list'); hl.innerHTML = '';
-            const dates = Object.keys(history).sort().reverse().slice(0, 7);
-            dates.forEach(date => {
-                const data = history[date];
-                const div = document.createElement('div');
-                div.className = "card p-5 text-sm";
-                div.innerHTML = `<div class="label-text mb-2">${date === todayKey ? 'Today' : date}</div>
-                    <div class="flex justify-between font-bold text-slate-700"><span>K: ${data.k}</span> <span>P: ${data.p}</span> <span>F: ${data.f}ml</span></div>`;
-                hl.appendChild(div);
-            });
-        }
-
-        function exportData() {
-            let report = `BEAN DIALYSIS REPORT\nGenerated: ${new Date().toLocaleString()}\n\n`;
-            Object.keys(history).sort().reverse().slice(0,7).forEach(d => {
-                report += `${d}: K: ${history[d].k}mg, P: ${history[d].p}mg, Fluid: ${history[d].f}ml\n`;
-            });
-            window.location.href = `mailto:?subject=Bean Dialysis Report&body=${encodeURIComponent(report)}`;
-        }
-
-        function removeItem(id) { dailyLog = dailyLog.filter(i => i.id !== id); saveAll(); }
-        function clearToday() { if(confirm("Clear today's entries?")) { dailyLog = []; saveAll(); } }
-        function saveSettings() {
-            limits = { k: parseInt(document.getElementById('limit-k').value) || 2000, p: parseInt(document.getElementById('limit-p').value) || 1000, f: parseInt(document.getElementById('limit-f').value) || 1000 };
-            localStorage.setItem('bean_limits', JSON.stringify(limits));
-            document.getElementById('disp-limit-k').textContent = limits.k; document.getElementById('disp-limit-p').textContent = limits.p; document.getElementById('disp-limit-f').textContent = limits.f;
-            updateTotals();
-        }
-        init();
-    </script>
-</body>
-</html>
 
 
 
