@@ -75,44 +75,32 @@
 
         <section id="section-food" class="bg-white p-5 rounded-2xl shadow-sm space-y-3">
             <div class="relative">
-                <input type="text" id="food-search" placeholder="Search food..." 
+                <input type="text" id="food-search" placeholder="Quick Search..." 
                     class="w-full p-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-purple-400 outline-none"
                     oninput="searchFood(this.value)">
                 <div id="search-results" class="search-results hidden absolute z-10 w-full bg-white border rounded-xl mt-1 shadow-2xl"></div>
             </div>
             
-            <div class="text-center text-[10px] text-gray-300 font-bold uppercase tracking-widest">or browse by category</div>
+            <div class="text-center text-[10px] text-gray-300 font-bold uppercase tracking-widest">or browse categories</div>
             
-            <select id="category-select" class="w-full p-3 bg-gray-50 border rounded-xl text-sm">
-                <option value="" disabled selected>Select Category</option>
+            <select id="category-select" class="w-full p-3 bg-gray-50 border rounded-xl text-sm" onchange="renderCategoryItems(this.value)">
+                <option value="" disabled selected>Tap to Choose Category</option>
             </select>
             
-            <div class="relative">
-                <select id="food-select" class="w-full p-3 bg-gray-50 border rounded-xl text-sm transition-colors duration-300" disabled>
-                    <option value="" disabled selected>Select Item</option>
-                </select>
-                <div id="browse-preview" class="hidden mt-2 p-2 rounded-lg text-center font-bold text-[10px] uppercase tracking-wider"></div>
-            </div>
-
-            <button onclick="addFood()" id="add-food-btn" class="w-full bg-gray-800 text-white font-bold py-3 rounded-xl disabled:opacity-50" disabled>Add to Log</button>
+            <div id="category-items-list" class="space-y-2 mt-2 max-h-64 overflow-y-auto hidden">
+                </div>
         </section>
 
         <section id="section-binder" class="hidden bg-white p-5 rounded-2xl shadow-sm border-l-4 border-green-400">
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1 ml-1">Binder Type</label>
-                    <select id="binder-select" class="w-full p-3 bg-gray-50 border rounded-xl text-sm" onchange="checkBinderEnable()">
-                        <option value="" disabled selected>Select Binder</option>
-                    </select>
-                </div>
+            <div class="space-y-4 text-center">
+                <select id="binder-select" class="w-full p-3 bg-gray-50 border rounded-xl text-sm" onchange="checkBinderEnable()">
+                    <option value="" disabled selected>Select Binder</option>
+                </select>
                 
-                <div class="text-center">
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">Quantity (Pills)</label>
-                    <div class="flex items-center justify-center space-x-6">
-                        <button onclick="changeQty(-1)" class="w-12 h-12 rounded-full border-2 border-green-500 text-green-500 text-2xl font-bold flex items-center justify-center active:bg-green-100">-</button>
-                        <span id="binder-qty-display" class="text-3xl font-black text-gray-700 w-8">1</span>
-                        <button onclick="changeQty(1)" class="w-12 h-12 rounded-full border-2 border-green-500 text-green-500 text-2xl font-bold flex items-center justify-center active:bg-green-100">+</button>
-                    </div>
+                <div class="flex items-center justify-center space-x-6 py-2">
+                    <button onclick="changeQty(-1)" class="w-12 h-12 rounded-full border-2 border-green-500 text-green-500 text-2xl font-bold flex items-center justify-center active:bg-green-100">-</button>
+                    <span id="binder-qty-display" class="text-3xl font-black text-gray-700 w-8">1</span>
+                    <button onclick="changeQty(1)" class="w-12 h-12 rounded-full border-2 border-green-500 text-green-500 text-2xl font-bold flex items-center justify-center active:bg-green-100">+</button>
                 </div>
 
                 <button onclick="addBinder()" id="add-binder-btn" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl disabled:opacity-50" disabled>Add <span id="btn-qty-label">1</span> Binder(s)</button>
@@ -120,14 +108,14 @@
         </section>
 
         <section id="section-history" class="hidden space-y-3">
-            <h2 class="text-gray-600 font-bold px-1">Past 7 Days</h2>
+            <h2 class="text-gray-600 font-bold px-1 text-center">Past 7 Days</h2>
             <div id="history-list" class="space-y-2"></div>
         </section>
 
         <section id="section-log">
             <div class="flex justify-between items-center mb-3 px-1">
                 <h2 class="text-lg font-semibold text-gray-700">Today's Entries</h2>
-                <button onclick="clearToday()" class="text-xs text-red-400 font-bold uppercase">Reset Day</button>
+                <button onclick="clearToday()" class="text-xs text-red-400 font-bold uppercase">Reset</button>
             </div>
             <ul id="log-list" class="space-y-2"></ul>
         </section>
@@ -135,18 +123,9 @@
         <details class="bg-gray-100 p-4 rounded-xl">
             <summary class="text-sm font-bold text-gray-500 cursor-pointer">⚙️ Settings & Limits</summary>
             <div class="grid grid-cols-3 gap-2 mt-3 text-center">
-                <div>
-                    <label class="text-[9px] font-bold text-gray-400 uppercase">K (mg)</label>
-                    <input type="number" id="limit-k" class="w-full p-2 border rounded-lg text-sm" onchange="saveSettings()">
-                </div>
-                <div>
-                    <label class="text-[9px] font-bold text-gray-400 uppercase">P (mg)</label>
-                    <input type="number" id="limit-p" class="w-full p-2 border rounded-lg text-sm" onchange="saveSettings()">
-                </div>
-                <div>
-                    <label class="text-[9px] font-bold text-gray-400 uppercase">Fluid (mL)</label>
-                    <input type="number" id="limit-f" class="w-full p-2 border rounded-lg text-sm" onchange="saveSettings()">
-                </div>
+                <div><label class="text-[9px] font-bold text-gray-400 uppercase">K (mg)</label><input type="number" id="limit-k" class="w-full p-2 border rounded-lg text-sm" onchange="saveSettings()"></div>
+                <div><label class="text-[9px] font-bold text-gray-400 uppercase">P (mg)</label><input type="number" id="limit-p" class="w-full p-2 border rounded-lg text-sm" onchange="saveSettings()"></div>
+                <div><label class="text-[9px] font-bold text-gray-400 uppercase">Fluid (mL)</label><input type="number" id="limit-f" class="w-full p-2 border rounded-lg text-sm" onchange="saveSettings()"></div>
             </div>
         </details>
     </main>
@@ -170,155 +149,6 @@
         let limits = JSON.parse(localStorage.getItem('bean_limits')) || { k: 2000, p: 1000, f: 1000 };
         let history = JSON.parse(localStorage.getItem('bean_history')) || {};
         let binderQty = 1;
-        const todayKey = new Date().toISOString().split('T')[0];
+        const todayKey = new Date().toISOString
 
-        function changeQty(amt) {
-            binderQty = Math.max(1, binderQty + amt);
-            document.getElementById('binder-qty-display').textContent = binderQty;
-            document.getElementById('btn-qty-label').textContent = binderQty;
-        }
-
-        function checkBinderEnable() {
-            document.getElementById('add-binder-btn').disabled = false;
-        }
-
-        function getKClass(k) {
-            if (k < 150) return 'pill-green';
-            if (k <= 200) return 'pill-yellow';
-            return 'pill-red';
-        }
-
-        function getKLabel(k) {
-            if (k < 150) return 'LOW K';
-            if (k <= 200) return 'MED K';
-            return 'HIGH K';
-        }
-
-        function searchFood(query) {
-            const resultsDiv = document.getElementById('search-results');
-            if (query.length < 2) { resultsDiv.classList.add('hidden'); return; }
-            let html = '';
-            Object.values(foodDatabase).flat().forEach(food => {
-                if (food.name.toLowerCase().includes(query.toLowerCase())) {
-                    const kClass = getKClass(food.k);
-                    html += `<div onclick='selectSearchItem(${JSON.stringify(food)})' class="p-3 border-b flex justify-between items-center active:bg-gray-100">
-                        <div>
-                            <div class="font-bold text-sm text-gray-800">${food.name}</div>
-                            <div class="text-[10px] text-gray-500">K: ${food.k}mg | P: ${food.p}mg | F: ${food.f}ml</div>
-                        </div>
-                        <span class="text-[9px] font-black px-2 py-1 rounded-full ${kClass}">${getKLabel(food.k)}</span>
-                    </div>`;
-                }
-            });
-            if (html) { resultsDiv.innerHTML = html; resultsDiv.classList.remove('hidden'); }
-            else { resultsDiv.classList.add('hidden'); }
-        }
-
-        function selectSearchItem(food) {
-            dailyLog.push({ ...food, type: 'food', id: Date.now() });
-            document.getElementById('food-search').value = '';
-            document.getElementById('search-results').classList.add('hidden');
-            saveAll();
-        }
-
-        function init() {
-            document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-            Object.keys(foodDatabase).forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; document.getElementById('category-select').appendChild(o); });
-            binderDatabase.forEach((b, i) => { const o = document.createElement('option'); o.value = i; o.textContent = b.name; document.getElementById('binder-select').appendChild(o); });
-            document.getElementById('limit-k').value = limits.k; document.getElementById('limit-p').value = limits.p; document.getElementById('limit-f').value = limits.f;
-            document.getElementById('disp-limit-k').textContent = limits.k; document.getElementById('disp-limit-p').textContent = limits.p; document.getElementById('disp-limit-f').textContent = limits.f;
-            renderLog(); updateTotals();
-        }
-
-        function switchTab(t) {
-            ['food', 'binder', 'history'].forEach(tab => {
-                document.getElementById(`section-${tab}`).classList.toggle('hidden', t !== tab);
-                const btn = document.getElementById(`tab-${tab}`);
-                if(t === tab) { btn.classList.add('bg-white', 'shadow', 'text-gray-800'); btn.classList.remove('text-gray-500'); }
-                else { btn.classList.remove('bg-white', 'shadow', 'text-gray-800'); btn.classList.add('text-gray-500'); }
-            });
-            document.getElementById('section-log').classList.toggle('hidden', t === 'history');
-            if(t === 'history') renderHistory();
-        }
-
-        document.getElementById('category-select').onchange = (e) => {
-            const fs = document.getElementById('food-select'); 
-            fs.innerHTML = '<option disabled selected>Select Item</option>'; 
-            fs.disabled = false;
-            fs.className = "w-full p-3 bg-gray-50 border rounded-xl text-sm transition-colors duration-300";
-            document.getElementById('browse-preview').classList.add('hidden');
-            
-            foodDatabase[e.target.value].forEach((f, i) => { 
-                const o = document.createElement('option'); 
-                o.value = i; 
-                o.textContent = f.name; 
-                fs.appendChild(o); 
-            });
-        };
-
-        document.getElementById('food-select').onchange = (e) => {
-            const cat = document.getElementById('category-select').value;
-            const food = foodDatabase[cat][e.target.value];
-            const preview = document.getElementById('browse-preview');
-            const fs = document.getElementById('food-select');
-            
-            document.getElementById('add-food-btn').disabled = false;
-            
-            // Show the Color Preview
-            preview.classList.remove('hidden');
-            preview.textContent = getKLabel(food.k) + `: ${food.k}mg Potassium`;
-            
-            // Apply color to the preview bar
-            if (food.k < 150) { preview.className = "mt-2 p-2 rounded-lg text-center font-bold text-[10px] uppercase tracking-wider k-green"; }
-            else if (food.k <= 200) { preview.className = "mt-2 p-2 rounded-lg text-center font-bold text-[10px] uppercase tracking-wider k-yellow"; }
-            else { preview.className = "mt-2 p-2 rounded-lg text-center font-bold text-[10px] uppercase tracking-wider k-red"; }
-        };
-
-        function addFood() {
-            const cat = document.getElementById('category-select').value;
-            const f = foodDatabase[cat][document.getElementById('food-select').value];
-            dailyLog.push({ ...f, type: 'food', id: Date.now() }); 
-            saveAll();
-            // Reset Browse UI
-            document.getElementById('food-select').selectedIndex = 0;
-            document.getElementById('browse-preview').classList.add('hidden');
-            document.getElementById('add-food-btn').disabled = true;
-        }
-
-        function addBinder() {
-            const b = binderDatabase[document.getElementById('binder-select').value];
-            dailyLog.push({ 
-                name: `${binderQty}x ${b.name}`, 
-                k: 0, 
-                p: -(b.bind * binderQty), 
-                f: 0, 
-                type: 'binder', 
-                id: Date.now() 
-            });
-            saveAll();
-            binderQty = 1;
-            document.getElementById('binder-qty-display').textContent = 1;
-            document.getElementById('btn-qty-label').textContent = 1;
-        }
-
-        function saveAll() {
-            localStorage.setItem('bean_log', JSON.stringify(dailyLog));
-            let tk=0, tp=0, tf=0; dailyLog.forEach(i => { tk+=i.k; tp+=i.p; tf+=i.f; });
-            history[todayKey] = { k: tk, p: Math.max(0, tp), f: tf };
-            localStorage.setItem('bean_history', JSON.stringify(history));
-            renderLog(); updateTotals();
-        }
-
-        function updateTotals() {
-            let tk=0, tp=0, tf=0; dailyLog.forEach(i => { tk+=i.k; tp+=i.p; tf+=i.f; });
-            const netP = Math.max(0, tp);
-            document.getElementById('total-k').textContent = tk;
-            document.getElementById('total-p').textContent = netP;
-            document.getElementById('total-f').textContent = tf;
-            updateBar('bar-k', tk, limits.k); updateBar('bar-p', netP, limits.p); updateBar('bar-f', tf, limits.f);
-        }
-
-        function updateBar(id, v, m) {
-            const pct = Math.min((v/m)*100, 100); const b = document.getElementById(id); b.style.width = pct+'%';
-            b.className = `progress-fill transition-all ${pct >= 100 ? 'bg-red-500' : pct > 80 ? 'bg-yellow-400' : id === 'bar-f'
 
