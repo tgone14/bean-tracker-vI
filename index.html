@@ -65,6 +65,13 @@
                     </div>
                     <div class="progress-bar-bg"><div id="bar-f" class="progress-fill" style="width: 0%; background-color: #38bdf8;"></div></div>
                 </div>
+                <div>
+    <div class="flex justify-between mb-2">
+        <span class="label-text text-blue-600">Protein</span>
+        <span class="value-text"><span id="total-pr">0</span> / <span id="disp-limit-pr">60</span> g</span>
+    </div>
+    <div class="progress-bar-bg"><div id="bar-pr" class="progress-fill" style="width: 0%; background-color: #3b82f6;"></div></div>
+</div>
             </div>
         </section>
 
@@ -126,6 +133,8 @@
                 <div><label class="label-text block text-center mb-1">K</label><input type="number" id="limit-k" class="w-full p-3 bg-white rounded-xl text-center font-bold" onchange="saveSettings()"></div>
                 <div><label class="label-text block text-center mb-1">P</label><input type="number" id="limit-p" class="w-full p-3 bg-white rounded-xl text-center font-bold" onchange="saveSettings()"></div>
                 <div><label class="label-text block text-center mb-1">Fluid</label><input type="number" id="limit-f" class="w-full p-3 bg-white rounded-xl text-center font-bold" onchange="saveSettings()"></div>
+                <div><label class="label-text block text-center mb-1">PRO (g)</label><input type="number" id="limit-pr" class="w-full p-3 bg-white rounded-xl text-center font-bold" onchange="saveSettings()">
+</div>
             </div>
         </section>
     </main>
@@ -296,21 +305,21 @@
         function updateTotals() {
     let tk=0, tp=0, tf=0, tpr=0; 
     dailyLog.forEach(i => { 
-        tk+=i.k; 
-        tp+=i.p; 
-        tf+=i.f; 
-        tpr+=(i.pr || 0); 
+        tk += i.k; 
+        tp += i.p; 
+        tf += i.f; 
+        tpr += (i.pr || 0); 
     });
     
     document.getElementById('total-k').textContent = tk;
     document.getElementById('total-p').textContent = Math.max(0, tp);
     document.getElementById('total-f').textContent = tf;
-    // You can add a new span in your HTML with id="total-pr" to show this:
-    if(document.getElementById('total-pr')) document.getElementById('total-pr').textContent = tpr;
+    document.getElementById('total-pr').textContent = tpr;
     
     updateBar('bar-k', tk, limits.k);
     updateBar('bar-p', Math.max(0, tp), limits.p);
     updateBar('bar-f', tf, limits.f);
+    updateBar('bar-pr', tpr, limits.pr || 60);
 }
 
         function updateBar(id, v, m) {
@@ -369,10 +378,21 @@
 }
         function saveAll() { localStorage.setItem('bean_log', JSON.stringify(dailyLog)); updateTotals(); renderLog(); }
         function saveSettings() {
-            limits = { k: parseInt(document.getElementById('limit-k').value)||2000, p: parseInt(document.getElementById('limit-p').value)||1000, f: parseInt(document.getElementById('limit-f').value)||1000 };
-            localStorage.setItem('bean_limits', JSON.stringify(limits));
-            document.getElementById('disp-limit-k').textContent = limits.k; document.getElementById('disp-limit-p').textContent = limits.p; document.getElementById('disp-limit-f').textContent = limits.f;
-            updateTotals();
+    limits = { 
+        k: parseInt(document.getElementById('limit-k').value) || 2000, 
+        p: parseInt(document.getElementById('limit-p').value) || 1000, 
+        f: parseInt(document.getElementById('limit-f').value) || 1000,
+        pr: parseInt(document.getElementById('limit-pr').value) || 60 
+    };
+    localStorage.setItem('bean_limits', JSON.stringify(limits));
+    
+    // Update display labels
+    document.getElementById('disp-limit-k').textContent = limits.k; 
+    document.getElementById('disp-limit-p').textContent = limits.p; 
+    document.getElementById('disp-limit-f').textContent = limits.f;
+    document.getElementById('disp-limit-pr').textContent = limits.pr;
+    updateTotals();
+}
         }
         function removeItem(id) { dailyLog = dailyLog.filter(i => i.id !== id); saveAll(); }
         function clearToday() { if(confirm("Reset today?")) { dailyLog = []; saveAll(); } }
@@ -386,16 +406,29 @@
         }
 
         function init() {
-            document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-            document.getElementById('limit-k').value = limits.k; document.getElementById('limit-p').value = limits.p; document.getElementById('limit-f').value = limits.f;
-            document.getElementById('disp-limit-k').textContent = limits.k; document.getElementById('disp-limit-p').textContent = limits.p; document.getElementById('disp-limit-f').textContent = limits.f;
-            const cs = document.getElementById('category-select'); Object.keys(foodDatabase).forEach(cat => cs.add(new Option(cat, cat)));
-            saveAll();
-        }
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+    
+    // Fill input fields
+    document.getElementById('limit-k').value = limits.k; 
+    document.getElementById('limit-p').value = limits.p; 
+    document.getElementById('limit-f').value = limits.f;
+    document.getElementById('limit-pr').value = limits.pr || 60;
+    
+    // Fill labels
+    document.getElementById('disp-limit-k').textContent = limits.k; 
+    document.getElementById('disp-limit-p').textContent = limits.p; 
+    document.getElementById('disp-limit-f').textContent = limits.f;
+    document.getElementById('disp-limit-pr').textContent = limits.pr || 60;
+
+    const cs = document.getElementById('category-select'); 
+    Object.keys(foodDatabase).forEach(cat => cs.add(new Option(cat, cat)));
+    saveAll();
+}
         init();
     </script>
 </body>
 </html>
+
 
 
 
