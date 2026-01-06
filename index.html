@@ -94,6 +94,9 @@
             <select id="category-select" class="w-full p-4 bg-slate-50 border-none rounded-2xl text-sm font-semibold" onchange="renderCategoryItems(this.value)">
                 <option value="" disabled selected>Browse Categories</option>
             </select>
+            <button onclick="addCustomFood()" class="w-full mt-2 p-4 bg-purple-50 text-purple-700 border border-purple-100 rounded-2xl text-sm font-bold uppercase tracking-wide">
+    + Add Custom Entry
+</button>
             <div id="category-items-list" class="space-y-2 mt-2 max-h-60 overflow-y-auto hidden"></div>
         </section>
 
@@ -264,7 +267,27 @@
                 list.appendChild(div);
             });
         }
+function addCustomFood() {
+    const name = prompt("Food name:");
+    if (!name) return;
 
+    const k = parseInt(prompt("Potassium (mg):", "0")) || 0;
+    const p = parseInt(prompt("Phosphorus (mg):", "0")) || 0;
+    const f = parseInt(prompt("Fluid (ml):", "0")) || 0;
+    const pr = parseFloat(prompt("Protein (g):", "0")) || 0;
+
+    dailyLog.push({
+        name: name + " (Custom)",
+        k: k,
+        p: p,
+        f: f,
+        pr: pr,
+        category: "Custom",
+        id: Date.now()
+    });
+
+    saveAll();
+}
         function logFoodItem(food, category) {
     const qty = prompt(`How many servings of ${food.name}?`, "1");
     
@@ -434,6 +457,7 @@
     </script>
 </body>
 </html>
+
 
 
 
