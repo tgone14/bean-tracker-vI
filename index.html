@@ -290,7 +290,8 @@
             const list = document.getElementById('log-list'); list.innerHTML = '';
             dailyLog.slice().reverse().forEach(i => {
                 const li = document.createElement('li');
-                let pClass = i.category === "Proteins" || i.category === "Binder" ? "p-neutral" : (i.p <= 50 ? "p-green" : (i.p <= 150 ? "p-yellow" : "p-red"));
+                // Now everything follows the P rules except Binders which stay neutral
+               let pClass = i.category === "Binder" ? "p-neutral" : (i.p <= 50 ? "p-green" : (i.p <= 150 ? "p-yellow" : "p-red"));
                 li.className = `p-4 rounded-3xl flex justify-between items-center ${pClass} mb-3 shadow-sm`;
                 li.innerHTML = `<div>
     <div class="font-bold text-sm text-slate-800">${i.name}</div>
@@ -428,6 +429,7 @@
     </script>
 </body>
 </html>
+
 
 
 
