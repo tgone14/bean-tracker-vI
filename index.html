@@ -15,13 +15,11 @@
         .label-text { font-size: 0.75rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.025em; }
         .value-text { font-size: 0.75rem; font-weight: 700; color: #1e293b; }
         
-        /* Phosphorus Traffic Lights */
         .p-green { background-color: #f0fdf4; border-left: 4px solid #22c55e; }
         .p-yellow { background-color: #fefce8; border-left: 4px solid #eab308; }
         .p-red { background-color: #fef2f2; border-left: 4px solid #ef4444; }
         .p-neutral { background-color: #f8fafc; border-left: 4px solid #cbd5e1; }
 
-        /* Traffic Light Dots */
         .dot-green { background-color: #22c55e; }
         .dot-yellow { background-color: #eab308; }
         .dot-red { background-color: #ef4444; }
@@ -66,12 +64,12 @@
                     <div class="progress-bar-bg"><div id="bar-f" class="progress-fill" style="width: 0%; background-color: #38bdf8;"></div></div>
                 </div>
                 <div>
-    <div class="flex justify-between mb-2">
-        <span class="label-text >Protein</span>
-        <span class="value-text"><span id="total-pr">0</span> / <span id="disp-limit-pr">60</span> g</span>
-    </div>
-    <div class="progress-bar-bg"><div id="bar-pr" class="progress-fill" style="width: 0%; background-color: #3b82f6;"></div></div>
-</div>
+                    <div class="flex justify-between mb-2">
+                        <span class="label-text">Protein</span>
+                        <span class="value-text"><span id="total-pr">0</span> / <span id="disp-limit-pr">60</span> g</span>
+                    </div>
+                    <div class="progress-bar-bg"><div id="bar-pr" class="progress-fill" style="width: 0%; background-color: #3b82f6;"></div></div>
+                </div>
             </div>
         </section>
 
@@ -94,9 +92,7 @@
             <select id="category-select" class="w-full p-4 bg-slate-50 border-none rounded-2xl text-sm font-semibold" onchange="renderCategoryItems(this.value)">
                 <option value="" disabled selected>Browse Categories</option>
             </select>
-            <button onclick="addCustomFood()" class="w-full mt-2 p-4 bg-purple-50 text-purple-700 border border-purple-100 rounded-2xl text-sm font-bold uppercase tracking-wide">
-    + Add Custom Entry
-</button>
+            <button onclick="addCustomFood()" class="w-full mt-2 p-4 bg-purple-50 text-purple-700 border border-purple-100 rounded-2xl text-sm font-bold uppercase tracking-wide">+ Add Custom Entry</button>
             <div id="category-items-list" class="space-y-2 mt-2 max-h-60 overflow-y-auto hidden"></div>
         </section>
 
@@ -130,94 +126,94 @@
             <ul id="log-list" class="space-y-3"></ul>
         </section>
 
-        <section class="bg-slate-100 p-6 rounded-[32px] border border-slate-200">
-            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest text-center mb-4">Set Your Limits</h3>
-            <div class="grid grid-cols-3 gap-4">
-                <div><label class="label-text block text-center mb-1">K</label><input type="number" id="limit-k" class="w-full p-3 bg-white rounded-xl text-center font-bold" onchange="saveSettings()"></div>
-                <div><label class="label-text block text-center mb-1">P</label><input type="number" id="limit-p" class="w-full p-3 bg-white rounded-xl text-center font-bold" onchange="saveSettings()"></div>
-                <div><label class="label-text block text-center mb-1">Fluid</label><input type="number" id="limit-f" class="w-full p-3 bg-white rounded-xl text-center font-bold" onchange="saveSettings()"></div>
-                <div><label class="label-text block text-center mb-1">PRO (g)</label><input type="number" id="limit-pr" class="w-full p-3 bg-white rounded-xl text-center font-bold" onchange="saveSettings()">
-</div>
+        <section class="bg-slate-100 p-6 rounded-[32px] border border-slate-200 text-center">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Set Your Limits</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="label-text block mb-1">K (mg)</label><input type="number" id="limit-k" class="w-full p-3 bg-white rounded-xl text-center font-bold" onchange="saveSettings()"></div>
+                <div><label class="label-text block mb-1">P (mg)</label><input type="number" id="limit-p" class="w-full p-3 bg-white rounded-xl text-center font-bold" onchange="saveSettings()"></div>
+                <div><label class="label-text block mb-1">Fluid (ml)</label><input type="number" id="limit-f" class="w-full p-3 bg-white rounded-xl text-center font-bold" onchange="saveSettings()"></div>
+                <div><label class="label-text block mb-1">PRO (g)</label><input type="number" id="limit-pr" class="w-full p-3 bg-white rounded-xl text-center font-bold" onchange="saveSettings()"></div>
             </div>
         </section>
     </main>
 
     <script>
         const foodDatabase = {
-    "Fruits": [
-        { name: "Apple (1 med)", k: 133, p: 12, f: 0, pr: 0.25 },
-        { name: "Blueberries (1 cup)", k: 114, p: 18, f: 0, pr: 1.1 },
-        { name: "Strawberries (1 cup)", k: 220, p: 35, f: 0, pr: 1 },
-        { name: "Raspberries (1 cup)", k: 186 , p: 15, f: 0, pr: 1.5 },
-        { name: "Blackberries (1/2 cup)", k: 233, p: 32, f: 0, pr: 2 },
-        { name: "Grapes (10 small)", k: 115, p: 12, f: 0, pr: 0.5 },
-        { name: "Pineapple (1/2 cup)", k: 90, p: 7, f: 0, pr: 0.45 },
-        { name: "Watermelon (1 cup)", k: 170, p: 15, f: 140, pr: 1 },
-        { name: "Peach (1 med)", k: 179, p: 32, f: 0, pr: 1.3 },
-        { name: "Peaches, Canned (1/2 cup)", k: 121, p: 12, f: 0, pr: 0.5 }, 
-        { name: "Plum (1 med)", k: 104, p: 11, f: 0, pr: 0.4 },
-        { name: "Pear (1 med)", k: 206, p: 21, f: 0, pr: 0.6 },
-        { name: "Cherries (10)", k: 184, p: 18, f: 0, pr: 0.8 },
-        { name: "Cranberries (1/2 cup)", k: 40, p: 6, f: 0, pr: 0.2 },
-        { name: "Mandarin Orange (1 small)", k: 126, p: 15, f: 0, pr: 0.6 }
-    ],
-    "Dairy": [
-        { name: "Milk, Whole (1 cup)", k: 374, p: 251, f: 240, pr: 8.1 },
-        { name: "Milk, Reduced Fat 2% (1 cup)", k: 390, p: 252, f: 240, pr: 8.2 },
-        { name: "Milk, Lowfat 1% (1 cup)", k: 391, p: 253, f: 240, pr: 8.3 },
-        { name: "Milk, Skim Nonfat (1 cup)", k: 411, p: 263, f: 240, pr: 8.4 },
-        { name: "Rice Milk (1 cup)", k: 65, p: 48, f: 240, pr: 0.6 },
-        { name: "Soy Milk (1 cup)", k: 371, p: 161, f: 240, pr: 8.3 },
-        { name: "Almond Milk, Vanilla (1 cup)", k: 120, p: 19, f: 240, pr: 1 },
-        { name: "Almond Milk, Unsweetened (1 cup)", k: 49, p: 19, f: 240, pr: 0.7 },
-        { name: "Yogurt (6 oz)", k: 398, p: 245, f: 170, pr: 9 },
-        { name: "Cheddar Cheese (1 oz)", k: 21, p: 129, f: 0, pr: 7 },
-        { name: "Cream Cheese, Lowfat (1 tbsp)", k: 50, p: 94, f: 0, pr: 2.8 },
-        { name: "Swiss Cheese (1 oz)", k: 20, p: 163, f: 0, pr: 7.5 },
-        { name: "Cottage Cheese, Lowfat 2% (1/2 cup)", k: 86, p: 150, f: 0, pr: 12 }
-    ],
-    "Vegetables": [
-        { name: "Asparagus (1/2 cup)", k: 135, p: 35, f: 0, pr: 1.5 }, 
-        { name: "Beets, Canned (1/2 cup)", k: 126, p: 14, f: 0, pr: 0.75 }, 
-        { name: "Broccoli (1/2 cup)", k: 115, p: 25, f: 0, pr: 1 }, 
-        { name: "Butternut Squash (1/2 cup)", k: 215, p: 23, f: 0, pr: 0.7 }, 
-        { name: "Carrots (1/2 cup)", k: 180, p: 24, f: 0, pr: 0.6 }, 
-        { name: "Green Beans (1/2 cup)", k: 115, p: 19, f: 0, pr: 1 }, 
-        { name: "Cucumber (1/2 cup)", k: 76, p: 12, f: 25, pr: 0.3 },
-        { name: "Onions (1/2 cup)", k: 125, p: 30, f: 0, pr: 0.6 },
-        { name: "Cabbage (1/2 cup)", k: 75, p: 11, f: 0, pr: 0.6 },
-        { name: "Cauliflower (1/2 cup)", k: 160, p: 23, f: 0, pr: 1 },
-        { name: "Eggplant (1/2 cup)", k: 94, p: 10, f: 0, pr: 0.4 }, 
-        { name: "Lettuce (1 cup)", k: 70, p: 10, f: 0, pr: 0.5 }, 
-        { name: "Mushrooms (1/2 cup)", k: 111, p: 30, f: 0, pr: 1 },
-        { name: "Peppers, Green (1/2 cup)", k: 80, p: 9, f: 0, pr: 0.4 },
-        { name: "Potato, Baked", k: 941, p: 130, f: 0, pr: 1.25 }, 
-        { name: "Plantain, Boiled (1 cup)", k: 396, p: 32, f: 0, pr: 1.5 }, 
-        { name: "Spinach, Raw (1 cup)", k: 167, p: 14, f: 0, pr: 0.9 },
-        { name: "Sweet Potato, Baked", k: 542, p: 61, f: 0, pr: 2.3 }, 
-        { name: "Tomato Sauce, Canned (1/2 cup)", k: 364, p: 33, f: 0, pr: 1.5 },
-        { name: "Yautia (1/2 cup)", k: 403, p: 34, f: 0, pr: 1 }, 
-        { name: "Zucchini (1/2 cup)", k: 162, p: 24, f: 0, pr: 0.7 } 
-    ],
-    "Grains" : [
-        { name: "White Bread (1 slice)", k: 32, p: 31, f: 0, pr: 2.5 },
-        { name: "Whole Wheat Bread (1 slice)", k: 80, p: 68, f: 0, pr: 4 }, 
-        { name: "English Muffin", k: 74, p: 72, f: 0, pr: 4 }, 
-        { name: "White Rice (1/2 cup)", k: 27, p: 34, f: 0, pr: 2.2 },
-        { name: "Pancake", k: 102, p: 122, f: 0, pr: 5 }
-        ], 
-    "Proteins": [
-        { name: "Chicken (3 oz)", k: 283, p: 174, f: 0, pr: 18 }, 
-        { name: "Egg (1)", k: 66, p: 92, f: 0, pr: 6.25 }, 
-        { name: "Ground Beef (3 oz)", k: 300, p: 181, f: 0, pr: 21 },
-        { name: "Salmon (3 oz)", k: 373, p: 266, f: 0, pr: 21 },
-        { name: "Pork (3 oz)", k: 308, p: 192, f: 0, pr: 21 }
-    ],
-    "Beverages": [
-        { name: "Water (8 oz)", k: 0, p: 0, f: 240, pr: 0 }, 
-        { name: "Coffee (8 oz)", k: 116, p: 7, f: 240, pr: 0 },
-        { name: "Tea (8 oz)", k: 88, p: 0, f: 240, pr: 0 },
-        { name: "Lemonade (8 oz)", k: 40, p: 5, f: 240, pr: 0 }]
+            "Fruits": [
+                { name: "Apple (1 med)", k: 133, p: 12, f: 0, pr: 0.25 },
+                { name: "Blueberries (1 cup)", k: 114, p: 18, f: 0, pr: 1.1 },
+                { name: "Strawberries (1 cup)", k: 220, p: 35, f: 0, pr: 1 },
+                { name: "Raspberries (1 cup)", k: 186 , p: 15, f: 0, pr: 1.5 },
+                { name: "Blackberries (1/2 cup)", k: 233, p: 32, f: 0, pr: 2 },
+                { name: "Grapes (10 small)", k: 115, p: 12, f: 0, pr: 0.5 },
+                { name: "Pineapple (1/2 cup)", k: 90, p: 7, f: 0, pr: 0.45 },
+                { name: "Watermelon (1 cup)", k: 170, p: 15, f: 140, pr: 1 },
+                { name: "Peach (1 med)", k: 179, p: 32, f: 0, pr: 1.3 },
+                { name: "Peaches, Canned (1/2 cup)", k: 121, p: 12, f: 0, pr: 0.5 },
+                { name: "Plum (1 med)", k: 104, p: 11, f: 0, pr: 0.4 },
+                { name: "Pear (1 med)", k: 206, p: 21, f: 0, pr: 0.6 },
+                { name: "Cherries (10)", k: 184, p: 18, f: 0, pr: 0.8 },
+                { name: "Cranberries (1/2 cup)", k: 40, p: 6, f: 0, pr: 0.2 },
+                { name: "Mandarin Orange (1 small)", k: 126, p: 15, f: 0, pr: 0.6 }
+            ],
+            "Dairy": [
+                { name: "Milk, Whole (1 cup)", k: 374, p: 251, f: 240, pr: 8.1 },
+                { name: "Milk, Reduced Fat 2% (1 cup)", k: 390, p: 252, f: 240, pr: 8.2 },
+                { name: "Milk, Lowfat 1% (1 cup)", k: 391, p: 253, f: 240, pr: 8.3 },
+                { name: "Milk, Skim Nonfat (1 cup)", k: 411, p: 263, f: 240, pr: 8.4 },
+                { name: "Rice Milk (1 cup)", k: 65, p: 48, f: 240, pr: 0.6 },
+                { name: "Soy Milk (1 cup)", k: 371, p: 161, f: 240, pr: 8.3 },
+                { name: "Almond Milk, Vanilla (1 cup)", k: 120, p: 19, f: 240, pr: 1 },
+                { name: "Almond Milk, Unsweetened (1 cup)", k: 49, p: 19, f: 240, pr: 0.7 },
+                { name: "Yogurt (6 oz)", k: 398, p: 245, f: 170, pr: 9 },
+                { name: "Cheddar Cheese (1 oz)", k: 21, p: 129, f: 0, pr: 7 },
+                { name: "Cream Cheese, Lowfat (1 tbsp)", k: 50, p: 94, f: 0, pr: 2.8 },
+                { name: "Swiss Cheese (1 oz)", k: 20, p: 163, f: 0, pr: 7.5 },
+                { name: "Cottage Cheese, Lowfat 2% (1/2 cup)", k: 86, p: 150, f: 0, pr: 12 }
+            ],
+            "Vegetables": [
+                { name: "Asparagus (1/2 cup)", k: 135, p: 35, f: 0, pr: 1.5 },
+                { name: "Beets, Canned (1/2 cup)", k: 126, p: 14, f: 0, pr: 0.75 },
+                { name: "Broccoli (1/2 cup)", k: 115, p: 25, f: 0, pr: 1 },
+                { name: "Butternut Squash (1/2 cup)", k: 215, p: 23, f: 0, pr: 0.7 },
+                { name: "Carrots (1/2 cup)", k: 180, p: 24, f: 0, pr: 0.6 },
+                { name: "Green Beans (1/2 cup)", k: 115, p: 19, f: 0, pr: 1 },
+                { name: "Cucumber (1/2 cup)", k: 76, p: 12, f: 25, pr: 0.3 },
+                { name: "Onions (1/2 cup)", k: 125, p: 30, f: 0, pr: 0.6 },
+                { name: "Cabbage (1/2 cup)", k: 75, p: 11, f: 0, pr: 0.6 },
+                { name: "Cauliflower (1/2 cup)", k: 160, p: 23, f: 0, pr: 1 },
+                { name: "Eggplant (1/2 cup)", k: 94, p: 10, f: 0, pr: 0.4 },
+                { name: "Lettuce (1 cup)", k: 70, p: 10, f: 0, pr: 0.5 },
+                { name: "Mushrooms (1/2 cup)", k: 111, p: 30, f: 0, pr: 1 },
+                { name: "Peppers, Green (1/2 cup)", k: 80, p: 9, f: 0, pr: 0.4 },
+                { name: "Potato, Baked", k: 941, p: 130, f: 0, pr: 1.25 },
+                { name: "Plantain, Boiled (1 cup)", k: 396, p: 32, f: 0, pr: 1.5 },
+                { name: "Spinach, Raw (1 cup)", k: 167, p: 14, f: 0, pr: 0.9 },
+                { name: "Sweet Potato, Baked", k: 542, p: 61, f: 0, pr: 2.3 },
+                { name: "Tomato Sauce, Canned (1/2 cup)", k: 364, p: 33, f: 0, pr: 1.5 },
+                { name: "Yautia (1/2 cup)", k: 403, p: 34, f: 0, pr: 1 },
+                { name: "Zucchini (1/2 cup)", k: 162, p: 24, f: 0, pr: 0.7 }
+            ],
+            "Grains": [
+                { name: "White Bread (1 slice)", k: 32, p: 31, f: 0, pr: 2.5 },
+                { name: "Whole Wheat Bread (1 slice)", k: 80, p: 68, f: 0, pr: 4 },
+                { name: "English Muffin", k: 74, p: 72, f: 0, pr: 4 },
+                { name: "White Rice (1/2 cup)", k: 27, p: 34, f: 0, pr: 2.2 },
+                { name: "Pancake", k: 102, p: 122, f: 0, pr: 5 }
+            ],
+            "Proteins": [
+                { name: "Chicken (3 oz)", k: 283, p: 174, f: 0, pr: 18 },
+                { name: "Egg (1)", k: 66, p: 92, f: 0, pr: 6.25 },
+                { name: "Ground Beef (3 oz)", k: 300, p: 181, f: 0, pr: 21 },
+                { name: "Salmon (3 oz)", k: 373, p: 266, f: 0, pr: 21 },
+                { name: "Pork (3 oz)", k: 308, p: 192, f: 0, pr: 21 }
+            ],
+            "Beverages": [
+                { name: "Water (8 oz)", k: 0, p: 0, f: 240, pr: 0 },
+                { name: "Coffee (8 oz)", k: 116, p: 7, f: 240, pr: 0 },
+                { name: "Tea (8 oz)", k: 88, p: 0, f: 240, pr: 0 },
+                { name: "Lemonade (8 oz)", k: 40, p: 5, f: 240, pr: 0 }
+            ]
         };
 
         const binderDatabase = [
@@ -227,7 +223,7 @@
         ];
 
         let dailyLog = JSON.parse(localStorage.getItem('bean_log')) || [];
-        let limits = JSON.parse(localStorage.getItem('bean_limits')) || { k: 2000, p: 1000, f: 1000 };
+        let limits = JSON.parse(localStorage.getItem('bean_limits')) || { k: 2000, p: 1000, f: 1000, pr: 60 };
         let binderQty = 1;
 
         function getDotColor(food, category) {
@@ -246,8 +242,8 @@
                     if (food.name.toLowerCase().includes(query.toLowerCase())) {
                         const dotClass = getDotColor(food, category);
                         html += `<div onclick='logFoodItem(${JSON.stringify(food)}, "${category}")' class="p-4 border-b hover:bg-slate-50 cursor-pointer flex justify-between items-center">
-                            <div><div class="font-bold text-slate-700 text-sm">${food.name}</div><div class="text-[9px] text-slate-400 uppercase font-black">${category}</div></div>
-                            <div class="w-3 h-3 rounded-full ${dotClass}"></div></div>`;
+                                <div><div class="font-bold text-slate-700 text-sm">${food.name}</div><div class="text-[9px] text-slate-400 uppercase font-black">${category}</div></div>
+                                <div class="w-3 h-3 rounded-full ${dotClass}"></div></div>`;
                     }
                 });
             }
@@ -267,90 +263,73 @@
                 list.appendChild(div);
             });
         }
-function addCustomFood() {
-    const name = prompt("Food name:");
-    if (!name) return;
 
-    const k = parseInt(prompt("Potassium (mg):", "0")) || 0;
-    const p = parseInt(prompt("Phosphorus (mg):", "0")) || 0;
-    const f = parseInt(prompt("Fluid (ml):", "0")) || 0;
-    const pr = parseFloat(prompt("Protein (g):", "0")) || 0;
+        function addCustomFood() {
+            const name = prompt("Food name:");
+            if (!name) return;
+            const k = parseInt(prompt("Potassium (mg):", "0")) || 0;
+            const p = parseInt(prompt("Phosphorus (mg):", "0")) || 0;
+            const f = parseInt(prompt("Fluid (ml):", "0")) || 0;
+            const pr = parseFloat(prompt("Protein (g):", "0")) || 0;
+            dailyLog.push({ name: name + " (Custom)", k: k, p: p, f: f, pr: pr, category: "Custom", id: Date.now() });
+            saveAll();
+        }
 
-    dailyLog.push({
-        name: name + " (Custom)",
-        k: k,
-        p: p,
-        f: f,
-        pr: pr,
-        category: "Custom",
-        id: Date.now()
-    });
-
-    saveAll();
-}
         function logFoodItem(food, category) {
-    const qty = prompt(`How many servings of ${food.name}?`, "1");
-    
-    // Validate that the user entered a number and didn't hit cancel
-    const numQty = parseFloat(qty);
-    if (isNaN(numQty) || numQty <= 0) return;
-
-    dailyLog.push({ 
-        ...food, 
-        name: numQty === 1 ? food.name : `${numQty}x ${food.name}`,
-        k: Math.round(food.k * numQty), 
-        p: Math.round(food.p * numQty), 
-        f: Math.round(food.f * numQty), 
-        category: category, 
-        id: Date.now() 
-    });
-
-    // Clear UI elements
-    document.getElementById('food-search').value = '';
-    document.getElementById('search-results').classList.add('hidden');
-    document.getElementById('category-items-list').classList.add('hidden');
-    document.getElementById('category-select').selectedIndex = 0;
-    
-    saveAll();
-}
+            const qty = prompt(`How many servings of ${food.name}?`, "1");
+            const numQty = parseFloat(qty);
+            if (isNaN(numQty) || numQty <= 0) return;
+            dailyLog.push({ 
+                ...food, 
+                name: numQty === 1 ? food.name : `${numQty}x ${food.name}`,
+                k: Math.round(food.k * numQty), 
+                p: Math.round(food.p * numQty), 
+                f: Math.round(food.f * numQty), 
+                pr: parseFloat((food.pr * numQty).toFixed(1)),
+                category: category, 
+                id: Date.now() 
+            });
+            document.getElementById('food-search').value = '';
+            document.getElementById('search-results').classList.add('hidden');
+            document.getElementById('category-items-list').classList.add('hidden');
+            document.getElementById('category-select').selectedIndex = 0;
+            saveAll();
+        }
 
         function renderLog() {
             const list = document.getElementById('log-list'); list.innerHTML = '';
             dailyLog.slice().reverse().forEach(i => {
                 const li = document.createElement('li');
-                // Now everything follows the P rules except Binders which stay neutral
-               let pClass = i.category === "Binder" ? "p-neutral" : (i.p <= 50 ? "p-green" : (i.p <= 150 ? "p-yellow" : "p-red"));
+                let pClass = i.category === "Binder" ? "p-neutral" : (i.p <= 50 ? "p-green" : (i.p <= 150 ? "p-yellow" : "p-red"));
                 li.className = `p-4 rounded-3xl flex justify-between items-center ${pClass} mb-3 shadow-sm`;
                 li.innerHTML = `<div>
-    <div class="font-bold text-sm text-slate-800">${i.name}</div>
-    <div class="text-[10px] opacity-60 font-bold uppercase tracking-tighter">
-        K: ${i.k} | P: ${i.p} | F: ${i.f}ml | <span class="text-blue-600">PRO: ${i.pr}g</span>
-    </div>
-    </div>
-<button onclick="removeItem(${i.id})" class="text-red-400 font-bold px-3 py-1 bg-red-50 rounded-full ml-4">✕</button>`;
+                    <div class="font-bold text-sm text-slate-800">${i.name}</div>
+                    <div class="text-[10px] opacity-60 font-bold uppercase tracking-tighter">
+                        K: ${i.k} | P: ${i.p} | F: ${i.f}ml | PRO: ${i.pr || 0}g
+                    </div>
+                </div>
+                <button onclick="removeItem(${i.id})" class="text-red-400 font-bold px-3 py-1 bg-red-50 rounded-full ml-4">✕</button>`;
                 list.appendChild(li);
             });
         }
 
         function updateTotals() {
-    let tk=0, tp=0, tf=0, tpr=0; 
-    dailyLog.forEach(i => { 
-        tk += i.k; 
-        tp += i.p; 
-        tf += i.f; 
-        tpr += (i.pr || 0); 
-    });
-    
-    document.getElementById('total-k').textContent = tk;
-    document.getElementById('total-p').textContent = Math.max(0, tp);
-    document.getElementById('total-f').textContent = tf;
-    document.getElementById('total-pr').textContent = tpr.toFixed(1);
-    
-    updateBar('bar-k', tk, limits.k);
-    updateBar('bar-p', Math.max(0, tp), limits.p);
-    updateBar('bar-f', tf, limits.f);
-    updateBar('bar-pr', tpr, limits.pr || 60);
-}
+            let tk=0, tp=0, tf=0, tpr=0; 
+            dailyLog.forEach(i => { 
+                tk += i.k; 
+                tp += i.p; 
+                tf += i.f; 
+                tpr += (i.pr || 0); 
+            });
+            document.getElementById('total-k').textContent = tk;
+            document.getElementById('total-p').textContent = Math.max(0, tp);
+            document.getElementById('total-f').textContent = tf;
+            document.getElementById('total-pr').textContent = tpr.toFixed(1);
+            updateBar('bar-k', tk, limits.k);
+            updateBar('bar-p', Math.max(0, tp), limits.p);
+            updateBar('bar-f', tf, limits.f);
+            updateBar('bar-pr', tpr, limits.pr || 60);
+        }
 
         function updateBar(id, v, m) {
             const pct = Math.min((v/m)*100, 100);
@@ -361,79 +340,47 @@ function addCustomFood() {
 
         function changeQty(amt) { binderQty = Math.max(1, binderQty + amt); document.getElementById('binder-qty-display').textContent = binderQty; }
         function checkBinderEnable() { document.getElementById('add-binder-btn').disabled = false; }
+        
         function addBinder() {
-    const b = binderDatabase[document.getElementById('binder-select').value];
-    dailyLog.push({ 
-        name: `${binderQty}x ${b.name}`, 
-        k: 0, 
-        p: -(b.bind * binderQty), 
-        f: 0, 
-        pr: 0, // Add this line!
-        category: 'Binder', 
-        id: Date.now() 
-    });
-    saveAll();
-}
+            const b = binderDatabase[document.getElementById('binder-select').value];
+            dailyLog.push({ name: `${binderQty}x ${b.name}`, k: 0, p: -(b.bind * binderQty), f: 0, pr: 0, category: 'Binder', id: Date.now() });
+            saveAll();
+        }
+
         function exportData() {
-    if (dailyLog.length === 0) {
-        alert("No entries to export yet!");
-        return;
-    }
+            if (dailyLog.length === 0) { alert("No entries to export yet!"); return; }
+            const date = new Date().toLocaleDateString();
+            let tk=0, tp=0, tf=0, tpr=0;
+            let foodList = "";
+            dailyLog.forEach(i => {
+                tk += i.k; tp += i.p; tf += i.f; tpr += (i.pr || 0);
+                foodList += `- ${i.name} (K: ${i.k}, P: ${i.p}, F: ${i.f}, PRO: ${i.pr})\n`;
+            });
+            const message = `Bean Dialysis Report - ${date}\n--------------------------\nTOTALS:\nPotassium: ${tk}mg\nPhosphorus: ${tp}mg\nFluid: ${tf}ml\nProtein: ${tpr.toFixed(1)}g\n\nENTRIES:\n${foodList}`;
+            if (navigator.share) { navigator.share({ title: `Bean Report ${date}`, text: message }).catch(console.error); } 
+            else { navigator.clipboard.writeText(message); alert("Report copied to clipboard!"); }
+        }
 
-    const date = new Date().toLocaleDateString();
-    let tk = 0, tp = 0, tf = 0;
-    let foodList = "";
-
-    // Calculate totals and build the food string
-    dailyLog.forEach(i => {
-        tk += i.k;
-        tp += i.p;
-        tf += i.f;
-        foodList += `- ${i.name} (K: ${i.k}, P: ${i.p}, F: ${i.f})\n`;
-    });
-
-    // Format the final message
-    const message = `Bean Dialysis Report - ${date}\n` +
-                    `--------------------------\n` +
-                    `TOTALS:\n` +
-                    `Potassium: ${tk}mg\n` +
-                    `Phosphorus: ${tp}mg\n` +
-                    `Fluid: ${tf}ml\n\n` +
-                    `ENTRIES:\n` +
-                    foodList;
-
-    // Use the Web Share API (works on mobile/modern browsers)
-    if (navigator.share) {
-        navigator.share({
-            title: `Bean Report ${date}`,
-            text: message
-        }).catch(console.error);
-    } else {
-        // Fallback for desktop: Copy to clipboard
-        navigator.clipboard.writeText(message);
-        alert("Report copied to clipboard!");
-    }
-}
         function saveAll() { localStorage.setItem('bean_log', JSON.stringify(dailyLog)); updateTotals(); renderLog(); }
+        
         function saveSettings() {
-    limits = { 
-        k: parseInt(document.getElementById('limit-k').value) || 2000, 
-        p: parseInt(document.getElementById('limit-p').value) || 1000, 
-        f: parseInt(document.getElementById('limit-f').value) || 1000,
-        pr: parseInt(document.getElementById('limit-pr').value) || 60 
-    };
-    localStorage.setItem('bean_limits', JSON.stringify(limits));
-    
-    // Update display labels
-    document.getElementById('disp-limit-k').textContent = limits.k; 
-    document.getElementById('disp-limit-p').textContent = limits.p; 
-    document.getElementById('disp-limit-f').textContent = limits.f;
-    document.getElementById('disp-limit-pr').textContent = limits.pr;
-    updateTotals();
-}
+            limits = { 
+                k: parseInt(document.getElementById('limit-k').value) || 2000, 
+                p: parseInt(document.getElementById('limit-p').value) || 1000, 
+                f: parseInt(document.getElementById('limit-f').value) || 1000,
+                pr: parseInt(document.getElementById('limit-pr').value) || 60 
+            };
+            localStorage.setItem('bean_limits', JSON.stringify(limits));
+            document.getElementById('disp-limit-k').textContent = limits.k; 
+            document.getElementById('disp-limit-p').textContent = limits.p; 
+            document.getElementById('disp-limit-f').textContent = limits.f;
+            document.getElementById('disp-limit-pr').textContent = limits.pr;
+            updateTotals();
+        }
         
         function removeItem(id) { dailyLog = dailyLog.filter(i => i.id !== id); saveAll(); }
         function clearToday() { if(confirm("Reset today?")) { dailyLog = []; saveAll(); } }
+        
         function switchTab(t) { 
             ['food', 'binder', 'history'].forEach(tab => {
                 document.getElementById(`section-${tab}`).classList.toggle('hidden', t !== tab);
@@ -444,28 +391,24 @@ function addCustomFood() {
         }
 
         function init() {
-    document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-    
-    // Fill input fields
-    document.getElementById('limit-k').value = limits.k; 
-    document.getElementById('limit-p').value = limits.p; 
-    document.getElementById('limit-f').value = limits.f;
-    document.getElementById('limit-pr').value = limits.pr || 60;
-    
-    // Fill labels
-    document.getElementById('disp-limit-k').textContent = limits.k; 
-    document.getElementById('disp-limit-p').textContent = limits.p; 
-    document.getElementById('disp-limit-f').textContent = limits.f;
-    document.getElementById('disp-limit-pr').textContent = limits.pr || 60;
-
-    const cs = document.getElementById('category-select'); 
-    Object.keys(foodDatabase).forEach(cat => cs.add(new Option(cat, cat)));
-    saveAll();
-}
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+            document.getElementById('limit-k').value = limits.k; 
+            document.getElementById('limit-p').value = limits.p; 
+            document.getElementById('limit-f').value = limits.f;
+            document.getElementById('limit-pr').value = limits.pr || 60;
+            document.getElementById('disp-limit-k').textContent = limits.k; 
+            document.getElementById('disp-limit-p').textContent = limits.p; 
+            document.getElementById('disp-limit-f').textContent = limits.f;
+            document.getElementById('disp-limit-pr').textContent = limits.pr || 60;
+            const cs = document.getElementById('category-select'); 
+            Object.keys(foodDatabase).forEach(cat => cs.add(new Option(cat, cat)));
+            saveAll();
+        }
         init();
     </script>
 </body>
 </html>
+
 
 
 
