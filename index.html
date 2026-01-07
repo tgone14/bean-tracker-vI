@@ -76,7 +76,7 @@
         <div class="flex space-x-1 bg-slate-200/50 p-1.5 rounded-2xl">
             <button onclick="switchTab('food')" id="tab-food" class="flex-1 py-2.5 rounded-xl font-bold text-sm bg-white shadow-sm text-slate-800 transition-all">Food</button>
             <button onclick="switchTab('binder')" id="tab-binder" class="flex-1 py-2.5 rounded-xl font-bold text-sm text-slate-500 transition-all">Binder</button>
-            <button onclick="switchTab('history')" id="tab-history" class="flex-1 py-2.5 rounded-xl font-bold text-sm text-slate-500 transition-all">History</button>
+            
         </div>
 
         <section id="section-food" class="card p-5 space-y-4">
@@ -114,9 +114,6 @@
             <button onclick="addBinder()" id="add-binder-btn" class="w-full bg-slate-800 text-white font-bold py-5 rounded-2xl disabled:opacity-20" disabled>Add Binder</button>
         </section>
 
-        <section id="section-history" class="hidden space-y-4">
-            <div id="history-list" class="space-y-3"></div>
-        </section>
 
         <section id="section-log">
             <div class="flex justify-between items-end mb-4 px-2">
@@ -260,18 +257,21 @@
     if (food.p > 150) pScore = 2;      // High Phosphorus
     else if (food.p > 50) pScore = 1;  // Med Phosphorus
 
-    // Determine the highest risk level
+    // Determine the highest risk level (The dot color)
     const maxScore = Math.max(kScore, pScore);
     
-    // Determine if we should say "Med" or "High"
+    // Determine the label (Med or High) based on the highest score
     const levelText = maxScore === 2 ? "High" : "Med";
     
-    // Determine the reason label (K, P, or K+P)
+    // Determine the reason (K, P, or K+P)
     let reason = "";
     if (maxScore > 0) {
+        // If Potassium matches the highest risk level, add K
         if (kScore === maxScore) reason += "K";
+        // If Phosphorus matches the highest risk level, add P
         if (pScore === maxScore) reason += (reason ? "+P" : "P");
-        reason = `<span class="ml-2 px-1.5 py-0.5 bg-black/10 rounded text-[9px]">${levelText} ${reason}</span>`;
+        
+        reason = `<span class="ml-2 px-1.5 py-0.5 bg-black/10 rounded text-[9px] font-bold">${levelText} ${reason}</span>`;
     }
 
     const colors = ["p-green", "p-yellow", "p-red"];
@@ -450,13 +450,13 @@
         function clearToday() { if(confirm("Reset today?")) { dailyLog = []; saveAll(); } }
         
         function switchTab(t) { 
-            ['food', 'binder', 'history'].forEach(tab => {
-                document.getElementById(`section-${tab}`).classList.toggle('hidden', t !== tab);
-                const btn = document.getElementById(`tab-${tab}`);
-                if(t===tab){ btn.classList.add('bg-white','shadow-sm','text-slate-800'); btn.classList.remove('text-slate-500'); }
-                else { btn.classList.remove('bg-white','shadow-sm','text-slate-800'); btn.classList.add('text-slate-500'); }
-            }); 
-        }
+    ['food', 'binder'].forEach(tab => {
+        document.getElementById(`section-${tab}`).classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById(`tab-${tab}`);
+        if(t===tab){ btn.classList.add('bg-white','shadow-sm','text-slate-800'); btn.classList.remove('text-slate-500'); }
+        else { btn.classList.remove('bg-white','shadow-sm','text-slate-800'); btn.classList.add('text-slate-500'); }
+    }); 
+}
 
         function init() {
             document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
@@ -476,6 +476,7 @@
     </script>
 </body>
 </html>
+
 
 
 
