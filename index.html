@@ -105,6 +105,7 @@
                 <option value="3">Velphoro (500mg)</option>
                 <option value="4">Auryxia (210mg Iron)</option>
                 <option value="5">Fosrenol/Lanthanum (500mg)</option>
+                <option value="6">Fosrenol/Lanthanum (750mg)</option>
             </select>
             <div class="flex items-center justify-center space-x-8 py-4">
                 <button onclick="changeQty(-1)" class="w-14 h-14 rounded-2xl bg-slate-100 text-2xl font-bold">-</button>
@@ -238,10 +239,14 @@
         };
 
         const binderDatabase = [
-            { name: "Renvela/Sevelamer", bind: 17 }, { name: "Phoslo/Calcium Acetate", bind: 30 },
-            { name: "Tums/Calcium Carbonate", bind: 19 }, { name: "Velphoro", bind: 130 },
-            { name: "Auryxia", bind: 40 }, { name: "Fosrenol", bind: 45 }
-        ];
+    { name: "Renvela/Sevelamer (800mg)", bind: 17 }, 
+    { name: "Phoslo/Calcium Acetate (667mg)", bind: 30 },
+    { name: "Tums/Calcium Carbonate (500mg)", bind: 19 }, 
+    { name: "Velphoro (500mg)", bind: 130 },
+    { name: "Auryxia (210mg Iron)", bind: 40 }, 
+    { name: "Fosrenol/Lanthanum (500mg)", bind: 45 },
+    { name: "Fosrenol/Lanthanum (750mg)", bind: 67.5 } // New Entry
+];
 
         let dailyLog = JSON.parse(localStorage.getItem('bean_log')) || [];
         let limits = JSON.parse(localStorage.getItem('bean_limits')) || { k: 2000, p: 1000, f: 1000, pr: 60 };
@@ -476,6 +481,7 @@
     </script>
 </body>
 </html>
+
 
 
 
