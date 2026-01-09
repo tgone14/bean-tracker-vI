@@ -139,20 +139,22 @@
         const foodDatabase = {
             "Fruits": [
                 { name: "Apple (1 med)", k: 133, p: 12, f: 0, pr: 0.25 },
+                { name: "Banana (1 med)", k: 422, p: 26, f: 0, pr: 1.3 },
+                { name: "Blackberries (1/2 cup)", k: 233, p: 32, f: 0, pr: 2 },
                 { name: "Blueberries (1 cup)", k: 114, p: 18, f: 0, pr: 1.1 },
+                { name: "Cranberries (1/2 cup)", k: 40, p: 6, f: 0, pr: 0.2 },
+                { name: "Cherries (10)", k: 184, p: 18, f: 0, pr: 0.8 },
                 { name: "Strawberries (1 cup)", k: 220, p: 35, f: 0, pr: 1 },
                 { name: "Raspberries (1 cup)", k: 186 , p: 15, f: 0, pr: 1.5 },
-                { name: "Blackberries (1/2 cup)", k: 233, p: 32, f: 0, pr: 2 },
                 { name: "Grapes (10 small)", k: 115, p: 12, f: 0, pr: 0.5 },
-                { name: "Pineapple (1/2 cup)", k: 90, p: 7, f: 0, pr: 0.45 },
-                { name: "Watermelon (1 cup)", k: 170, p: 15, f: 140, pr: 1 },
+                { name: "Orange (1 med)", k: 237, p: 18, f: 0, pr: 1.2 },
                 { name: "Peach (1 med)", k: 179, p: 32, f: 0, pr: 1.3 },
                 { name: "Peaches, Canned (1/2 cup)", k: 121, p: 12, f: 0, pr: 0.5 },
-                { name: "Plum (1 med)", k: 104, p: 11, f: 0, pr: 0.4 },
                 { name: "Pear (1 med)", k: 206, p: 21, f: 0, pr: 0.6 },
-                { name: "Cherries (10)", k: 184, p: 18, f: 0, pr: 0.8 },
-                { name: "Cranberries (1/2 cup)", k: 40, p: 6, f: 0, pr: 0.2 },
+                { name: "Pineapple (1/2 cup)", k: 90, p: 7, f: 0, pr: 0.45 },
+                { name: "Plum (1 med)", k: 104, p: 11, f: 0, pr: 0.4 },
                 { name: "Mandarin Orange (1 small)", k: 126, p: 15, f: 0, pr: 0.6 }
+                { name: "Watermelon (1 cup)", k: 170, p: 15, f: 140, pr: 1 },
             ],
             "Dairy": [
                 { name: "Milk, Whole (1 cup)", k: 374, p: 251, f: 240, pr: 8.1 },
@@ -174,12 +176,12 @@
                 { name: "Beets, Canned (1/2 cup)", k: 126, p: 14, f: 0, pr: 0.75 },
                 { name: "Broccoli (1/2 cup)", k: 115, p: 25, f: 0, pr: 1 },
                 { name: "Butternut Squash (1/2 cup)", k: 215, p: 23, f: 0, pr: 0.7 },
+                { name: "Cabbage (1/2 cup)", k: 75, p: 11, f: 0, pr: 0.6 },
                 { name: "Carrots (1/2 cup)", k: 180, p: 24, f: 0, pr: 0.6 },
+                { name: "Cauliflower (1/2 cup)", k: 160, p: 23, f: 0, pr: 1 },
                 { name: "Green Beans (1/2 cup)", k: 115, p: 19, f: 0, pr: 1 },
                 { name: "Cucumber (1/2 cup)", k: 76, p: 12, f: 25, pr: 0.3 },
                 { name: "Onions (1/2 cup)", k: 125, p: 30, f: 0, pr: 0.6 },
-                { name: "Cabbage (1/2 cup)", k: 75, p: 11, f: 0, pr: 0.6 },
-                { name: "Cauliflower (1/2 cup)", k: 160, p: 23, f: 0, pr: 1 },
                 { name: "Eggplant (1/2 cup)", k: 94, p: 10, f: 0, pr: 0.4 },
                 { name: "Lettuce (1 cup)", k: 70, p: 10, f: 0, pr: 0.5 },
                 { name: "Mushrooms (1/2 cup)", k: 111, p: 30, f: 0, pr: 1 },
@@ -232,10 +234,16 @@
             ],
             "Beverages": [
                 { name: "Water (8 oz)", k: 0, p: 0, f: 240, pr: 0 },
+                { name: "Coconut Water (8 oz)", k: 600, p: 48, f: 240, pr: 1.7 },
                 { name: "Coffee (8 oz)", k: 116, p: 7, f: 240, pr: 0 },
                 { name: "Tea (8 oz)", k: 88, p: 0, f: 240, pr: 0 },
                 { name: "Lemonade (8 oz)", k: 40, p: 5, f: 240, pr: 0 }
             ]
+            "Supplements": [
+                { name: "Nepro HP (8 fl oz)", k: 250, p: 170, f: 237, pr: 19 },
+                { name: "Ensure Original (8 fl oz)", k: 370, p: 250, f: 237, pr: 9 },
+                { name: "Glucerna (8 fl oz)", k: 380, p: 220, f: 237, pr: 10 }
+            ],
         };
 
         const binderDatabase = [
@@ -481,6 +489,7 @@
     </script>
 </body>
 </html>
+
 
 
 
