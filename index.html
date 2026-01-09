@@ -136,6 +136,68 @@
     </main>
 
     <script>
+
+
+
+        let currentLang = 'en';
+
+const translations = {
+    en: {
+        intake: "Net Daily Intake",
+        potassium: "Potassium",
+        phosphorus: "Net Phosphorus",
+        fluid: "Fluid",
+        protein: "Protein",
+        searchPlaceholder: "Search foods...",
+        browse: "Browse Categories",
+        custom: "+ Add Custom Entry",
+        today: "Today's Entries",
+        reset: "Reset",
+        limits: "Set Your Limits",
+        export: "Export"
+    },
+    es: {
+        intake: "Consumo Diario Neto",
+        potassium: "Potasio",
+        phosphorus: "Fósforo Neto",
+        fluid: "Líquidos",
+        protein: "Proteína",
+        searchPlaceholder: "Buscar alimentos...",
+        browse: "Explorar Categorías",
+        custom: "+ Agregar Entrada Personalizada",
+        today: "Entradas de Hoy",
+        reset: "Reiniciar",
+        limits: "Ajustar Límites",
+        export: "Exportar"
+    }
+};
+
+function toggleLanguage() {
+    currentLang = currentLang === 'en' ? 'es' : 'en';
+    updateUI();
+}
+
+function updateUI() {
+    const t = translations[currentLang];
+    document.querySelector('h2').innerText = t.intake;
+    document.getElementById('lang-btn').innerText = currentLang === 'en' ? 'Español' : 'English';
+    
+    // Update Labels
+    const labels = document.querySelectorAll('.label-text');
+    labels[0].innerText = t.potassium;
+    labels[1].innerText = t.phosphorus;
+    labels[2].innerText = t.fluid;
+    labels[3].innerText = t.protein;
+    
+    // Update Placeholder & Buttons
+    document.getElementById('food-search').placeholder = t.searchPlaceholder;
+    document.querySelector('#section-food button').innerText = t.custom;
+    document.querySelector('#section-log h2').innerText = t.today;
+    
+    // Re-render categories if they exist
+    const cs = document.getElementById('category-select');
+    cs.options[0].text = t.browse;
+}
         const foodDatabase = {
             "Fruits": [
                 { name: "Apple (1 med)", k: 133, p: 12, f: 0, pr: 0.25 },
@@ -154,22 +216,26 @@
                 { name: "Pineapple (1/2 cup)", k: 90, p: 7, f: 0, pr: 0.45 },
                 { name: "Plum (1 med)", k: 104, p: 11, f: 0, pr: 0.4 },
                 { name: "Mandarin Orange (1 small)", k: 126, p: 15, f: 0, pr: 0.6 },
+                { name: "Mango (1 cup)", k: 277, p: 23, f: 0, pr: 1.4 },
                 { name: "Watermelon (1 cup)", k: 170, p: 15, f: 140, pr: 1 }
             ],
             "Dairy": [
+                { name: "Almond Milk, Vanilla (1 cup)", k: 120, p: 19, f: 240, pr: 1 },
+                { name: "Almond Milk, Unsweetened (1 cup)", k: 49, p: 19, f: 240, pr: 0.7 },
+                { name: "Cheddar Cheese (1 oz)", k: 21, p: 129, f: 0, pr: 7 },
+                { name: "Cottage Cheese, Lowfat 2% (1/2 cup)", k: 86, p: 150, f: 0, pr: 12 },
+                { name: "Cream Cheese, Lowfat (1 tbsp)", k: 50, p: 94, f: 0, pr: 2.8 },
+                { name: "Greek Yogurt, Vanilla (6 oz)", k: 184, p: 178, f: 150, pr: 15.0 }, 
                 { name: "Milk, Whole (1 cup)", k: 374, p: 251, f: 240, pr: 8.1 },
                 { name: "Milk, Reduced Fat 2% (1 cup)", k: 390, p: 252, f: 240, pr: 8.2 },
                 { name: "Milk, Lowfat 1% (1 cup)", k: 391, p: 253, f: 240, pr: 8.3 },
                 { name: "Milk, Skim Nonfat (1 cup)", k: 411, p: 263, f: 240, pr: 8.4 },
+                { name: "Mozzarella Cheese (1 oz)", k: 21, p: 117, f: 0, pr: 6.0 },
+                { name: "Provolone Cheese (1 oz)", k: 40, p: 140, f: 0, pr: 7.0 },
                 { name: "Rice Milk (1 cup)", k: 65, p: 48, f: 240, pr: 0.6 },
                 { name: "Soy Milk (1 cup)", k: 371, p: 161, f: 240, pr: 8.3 },
-                { name: "Almond Milk, Vanilla (1 cup)", k: 120, p: 19, f: 240, pr: 1 },
-                { name: "Almond Milk, Unsweetened (1 cup)", k: 49, p: 19, f: 240, pr: 0.7 },
-                { name: "Yogurt (6 oz)", k: 398, p: 245, f: 170, pr: 9 },
-                { name: "Cheddar Cheese (1 oz)", k: 21, p: 129, f: 0, pr: 7 },
-                { name: "Cream Cheese, Lowfat (1 tbsp)", k: 50, p: 94, f: 0, pr: 2.8 },
                 { name: "Swiss Cheese (1 oz)", k: 20, p: 163, f: 0, pr: 7.5 },
-                { name: "Cottage Cheese, Lowfat 2% (1/2 cup)", k: 86, p: 150, f: 0, pr: 12 }
+                { name: "Yogurt (6 oz)", k: 398, p: 245, f: 170, pr: 9 }
             ],
             "Vegetables": [
                 { name: "Asparagus (1/2 cup)", k: 135, p: 35, f: 0, pr: 1.5 },
@@ -188,6 +254,7 @@
                 { name: "Peppers, Green (1/2 cup)", k: 80, p: 9, f: 0, pr: 0.4 },
                 { name: "Potato, Baked", k: 941, p: 130, f: 0, pr: 1.25 },
                 { name: "Plantain, Boiled (1 cup)", k: 396, p: 32, f: 0, pr: 1.5 },
+                { name: "Fried Plantains / Plátanos Fritos (1/2 cup)", k: 465, p: 43, f: 0, pr: 1.0 }  ],
                 { name: "Spinach, Raw (1 cup)", k: 167, p: 14, f: 0, pr: 0.9 },
                 { name: "Sweet Potato, Baked", k: 542, p: 61, f: 0, pr: 2.3 },
                 { name: "Tomato Sauce, Canned (1/2 cup)", k: 364, p: 33, f: 0, pr: 1.5 },
@@ -228,18 +295,25 @@
                 { name: "Sardines, Canned (3 oz)", k: 338, p: 417, f: 0, pr: 21 },
                 { name: "Tuna Salad (1/2 cup)", k: 180, p: 145, f: 0, pr: 16 },
                 { name: "Turkey Bacon (1 slice)", k: 23, p: 21, f: 0, pr: 2 },
+                { name: "Turkey Deli Meat (2 oz)", k: 150, p: 110, f: 0, pr: 10.0 },
                 { name: "Peanut Butter (2 tbsp)", k: 189, p: 101, f: 0, pr: 8 },
                 { name: "Pork (3 oz)", k: 308, p: 192, f: 0, pr: 21 },
                 { name: "Chicken Nuggets, Wendys (5 Pieces)", k: 170, p: 184, f: 0, pr: 11 }
             ],
             "Beverages": [
-                { name: "Water (8 oz)", k: 0, p: 0, f: 240, pr: 0 },
+
+                { name: "Apple Juice (8 oz)", k: 250, p: 20, f: 240, pr: 0.0 },
                 { name: "Coconut Water (8 oz)", k: 600, p: 48, f: 240, pr: 1.7 },
                 { name: "Coffee (8 oz)", k: 116, p: 7, f: 240, pr: 0 },
-                { name: "Tea (8 oz)", k: 88, p: 0, f: 240, pr: 0 },
-                { name: "Lemonade (8 oz)", k: 40, p: 5, f: 240, pr: 0 }
+                { name: "Grape Juice (8 oz)", k: 260, p: 30, f: 240, pr: 0.5 },
+                { name: "Lemonade (8 oz)", k: 40, p: 5, f: 240, pr: 0 },
+                { name: "Orange Juice (8 oz)", k: 450, p: 40, f: 240, pr: 1.7 },
+                { name: "Prune Juice (8 oz)", k: 700, p: 64, f: 240, pr: 1.5 },
+                { name: "Tea, Black (8 oz)", k: 88, p: 0, f: 240, pr: 0 },
+                { name: "Water (8 oz)", k: 0, p: 0, f: 240, pr: 0 }
             ],
             "Supplements": [
+                
                 { name: "Nepro HP (8 fl oz)", k: 250, p: 170, f: 237, pr: 19 },
                 { name: "Ensure Original (8 fl oz)", k: 370, p: 250, f: 237, pr: 9 },
                 { name: "Glucerna (8 fl oz)", k: 380, p: 220, f: 237, pr: 10 }
@@ -489,6 +563,7 @@
     </script>
 </body>
 </html>
+
 
 
 
