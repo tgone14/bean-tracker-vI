@@ -28,10 +28,14 @@
 </head>
 <body class="pb-24">
 
-    <header class="bean-gradient text-white pt-12 pb-10 px-6 shadow-md rounded-b-[40px] mb-6 text-center">
-        <h1 class="text-5xl font-extrabold tracking-tight">Bean</h1>
-        <p class="text-sm font-medium opacity-80 mt-2" id="current-date"></p>
-    </header>
+    <header class="bean-gradient text-white pt-12 pb-10 px-6 shadow-md rounded-b-[40px] mb-6 text-center relative">
+    <button onclick="toggleLanguage()" id="lang-btn" 
+        class="absolute top-4 right-4 bg-white/20 backdrop-blur-md border border-white/30 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white">
+        Español
+    </button>
+    <h1 class="text-5xl font-extrabold tracking-tight">Bean</h1>
+    <p class="text-sm font-medium opacity-80 mt-2" id="current-date"></p>
+</header>
 
     <main class="max-w-md mx-auto p-4 space-y-6">
 
@@ -137,38 +141,46 @@
 
     <script>
 
-
-
-        let currentLang = 'en';
+    let currentLang = 'en';
 
 const translations = {
     en: {
+        langBtn: "Español",
         intake: "Net Daily Intake",
         potassium: "Potassium",
         phosphorus: "Net Phosphorus",
         fluid: "Fluid",
         protein: "Protein",
+        tabFood: "Food",
+        tabBinder: "Binder",
         searchPlaceholder: "Search foods...",
         browse: "Browse Categories",
         custom: "+ Add Custom Entry",
         today: "Today's Entries",
         reset: "Reset",
         limits: "Set Your Limits",
-        export: "Export"
+        export: "Export",
+        addBinder: "Add Binder",
+        selectBinder: "Select Binder Type"
     },
     es: {
+        langBtn: "English",
         intake: "Consumo Diario Neto",
         potassium: "Potasio",
         phosphorus: "Fósforo Neto",
         fluid: "Líquidos",
         protein: "Proteína",
+        tabFood: "Comida",
+        tabBinder: "Captor",
         searchPlaceholder: "Buscar alimentos...",
         browse: "Explorar Categorías",
-        custom: "+ Agregar Entrada Personalizada",
+        custom: "+ Agregar Entrada",
         today: "Entradas de Hoy",
         reset: "Reiniciar",
         limits: "Ajustar Límites",
-        export: "Exportar"
+        export: "Exportar",
+        addBinder: "Añadir Captor",
+        selectBinder: "Seleccionar tipo de captor"
     }
 };
 
@@ -179,25 +191,47 @@ function toggleLanguage() {
 
 function updateUI() {
     const t = translations[currentLang];
-    document.querySelector('h2').innerText = t.intake;
-    document.getElementById('lang-btn').innerText = currentLang === 'en' ? 'Español' : 'English';
     
-    // Update Labels
+    // Header & Global Buttons
+    document.getElementById('lang-btn').innerText = t.langBtn;
+    document.querySelector('h2').innerText = t.intake;
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString(currentLang === 'en' ? 'en-US' : 'es-ES', { weekday: 'long', month: 'short', day: 'numeric' });
+    
+    // Tabs
+    document.getElementById('tab-food').innerText = t.tabFood;
+    document.getElementById('tab-binder').innerText = t.tabBinder;
+
+    // Progress Bar Labels
     const labels = document.querySelectorAll('.label-text');
     labels[0].innerText = t.potassium;
     labels[1].innerText = t.phosphorus;
     labels[2].innerText = t.fluid;
     labels[3].innerText = t.protein;
-    
-    // Update Placeholder & Buttons
+
+    // Search & Category
     document.getElementById('food-search').placeholder = t.searchPlaceholder;
-    document.querySelector('#section-food button').innerText = t.custom;
-    document.querySelector('#section-log h2').innerText = t.today;
+    document.getElementById('category-select').options[0].text = t.browse;
     
-    // Re-render categories if they exist
-    const cs = document.getElementById('category-select');
-    cs.options[0].text = t.browse;
+    // Binder Section
+    document.getElementById('binder-select').options[0].text = t.selectBinder;
+    document.getElementById('add-binder-btn').innerText = t.addBinder;
+
+    // Log Section
+    document.querySelector('#section-log h2').innerText = t.today;
+    document.querySelector('button[onclick="clearToday()"]').innerText = t.reset;
+    document.querySelector('button[onclick="exportData()"]').innerText = t.export;
+
+    // Bottom Settings
+    document.querySelector('h3.text-xs').innerText = t.limits;
+    
+    // Update Custom Button specifically
+    document.querySelector('button[onclick="addCustomFood()"]').innerText = t.custom;
+
+    // Re-render Log to update date format if needed
+    renderLog();
 }
+
+        
         const foodDatabase = {
             "Fruits": [
                 { name: "Apple (1 med)", k: 133, p: 12, f: 0, pr: 0.25 },
@@ -563,6 +597,7 @@ function updateUI() {
     </script>
 </body>
 </html>
+
 
 
 
