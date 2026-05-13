@@ -6,6 +6,7 @@
     <title>Bean - Dialysis Tracker</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         .bean-gradient { background: linear-gradient(135deg, #7c9aff 0%, #a881e6 100%); }
@@ -82,7 +83,18 @@
             <button onclick="switchTab('binder')" id="tab-binder" class="flex-1 py-2.5 rounded-xl font-bold text-sm text-slate-500 transition-all">Binder</button>
             
         </div>
+        <section id="scanner-section" class="card p-4 hidden">
+    <div id="reader" style="width: 100%; border-radius: 16px; overflow: hidden;"></div>
+    <div id="scanner-warning" class="hidden mt-4 p-4 rounded-2xl bg-red-100 text-red-600 text-center font-black text-2xl">
+        ✕ PHOSPHATE ADDITIVE FOUND
+    </div>
+    <button onclick="stopScanner()" class="w-full mt-2 text-xs text-slate-400 font-bold uppercase">Close Scanner</button>
+</section>
 
+<!-- Add a button to open it in your Food Section -->
+<button onclick="startScanner()" class="w-full py-3 bg-slate-800 text-white rounded-2xl font-bold mb-4">
+    Scan Barcode for Additives
+</button>
         <section id="section-food" class="card p-5 space-y-4">
             <div class="relative">
                 <input type="text" id="food-search" placeholder="Search foods (Milk, Cheese, Egg)..." 
@@ -140,7 +152,12 @@
     </main>
 
     <script>
-
+    const phosphateAdditives = [
+    "phosphoric acid", "sodium aluminum phosphate", "pyrophosphate", 
+    "polyphosphate", "triphosphate", "trimetaphosphate", 
+    "hexametaphosphate", "dicalcium phosphate", "monocalcium phosphate", 
+    "tricalcium phosphate"
+];
     let currentLang = 'en';
 
 const translations = {
@@ -405,7 +422,20 @@ function updateUI() {
         label: reason
     };
 }
+function checkIngredientsForPhos(ingredientsText) {
+    const text = ingredientsText.toLowerCase();
+    const warningEl = document.getElementById('scanner-warning');
+    
+    // Check our specific list or search for the "phos" substring
+    const hasAdditive = phosphateAdditives.some(additive => text.includes(additive)) || text.includes("phos");
 
+    if (hasAdditive) {
+        warningEl.classList.remove('hidden');
+    } else {
+        warningEl.classList.add('hidden');
+        alert("No common phosphate additives detected.");
+    }
+}
         function searchFood(query) {
     const resultsDiv = document.getElementById('search-results');
     if (query.length < 1) { 
@@ -594,6 +624,17 @@ function updateUI() {
             Object.keys(foodDatabase).forEach(cat => cs.add(new Option(cat, cat)));
             saveAll();
         }
+        function fetchProductData(barcode) {
+    fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 1 && data.product.ingredients_text) {
+                checkIngredientsForPhos(data.product.ingredients_text);
+            } else {
+                alert("Product or ingredients not found in database.");
+            }
+        });
+}
         init();
     </script>
 </body>
