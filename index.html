@@ -86,8 +86,17 @@
         <section id="scanner-section" class="card p-4 hidden">
     <div id="reader" style="width: 100%; border-radius: 16px; overflow: hidden;"></div>
     <div id="scanner-warning" class="hidden mt-4 p-4 rounded-2xl bg-red-100 text-red-600 text-center font-black text-2xl">
-        ✕ PHOSPHATE ADDITIVE FOUND
-    </div>
+    ✕ PHOSPHATE ADDITIVE FOUND
+</div>
+
+<!-- The Success Message (Add this) -->
+<div id="scanner-success" class="hidden mt-4 p-4 rounded-2xl bg-green-100 text-green-700 text-center font-black text-2xl">
+    ✓ NO PHOSPHATE ADDITIVES DETECTED
+</div>
+    <div id="scanner-unknown" class="hidden mt-4 p-4 rounded-2xl bg-amber-100 text-amber-700 text-center font-bold text-lg">
+    ⚠️ INGREDIENTS NOT FOUND<br>
+    <span class="text-sm font-medium">Please check the physical label for "PHOS"</span>
+</div>
     <button onclick="stopScanner()" class="w-full mt-2 text-xs text-slate-400 font-bold uppercase">Close Scanner</button>
 </section>
 
@@ -433,18 +442,20 @@ function updateUI() {
 function checkIngredientsForPhos(ingredientsText) {
     const text = ingredientsText.toLowerCase();
     const warningEl = document.getElementById('scanner-warning');
+    const successEl = document.getElementById('scanner-success');
     
-    // 1. Check if the broad "phos" string exists
+    // 1. Logic check: Does it contain "phos" or anything in our specific list?
     const hasPhosString = text.includes("phos");
-    
-    // 2. Check if specific non-phos triggers like "lecithin" exist
     const hasSpecificAdditive = phosphateAdditives.some(additive => text.includes(additive));
 
     if (hasPhosString || hasSpecificAdditive) {
+        // Show Warning, Hide Success
         warningEl.classList.remove('hidden');
+        successEl.classList.add('hidden');
     } else {
+        // Show Success, Hide Warning
+        successEl.classList.remove('hidden');
         warningEl.classList.add('hidden');
-        // Optional: alert("Clear of common additives.");
     }
 }
         function searchFood(query) {
@@ -580,6 +591,10 @@ function checkIngredientsForPhos(ingredientsText) {
 let html5QrCode; // Global variable so we can stop it later
 
 function startScanner() {
+    // Clear previous results before starting
+    document.getElementById('scanner-warning').classList.add('hidden');
+    document.getElementById('scanner-success').classList.add('hidden');
+    document.getElementById('scanner-unknown').classList.add('hidden');
     // 1. Show the scanner container
     document.getElementById('scanner-section').classList.remove('hidden');
 
@@ -677,16 +692,28 @@ function stopScanner() {
             Object.keys(foodDatabase).forEach(cat => cs.add(new Option(cat, cat)));
             saveAll();
         }
-        function fetchProductData(barcode) {
+      function fetchProductData(barcode) {
     fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`)
         .then(response => response.json())
         .then(data => {
-            if (data.status === 1 && data.product.ingredients_text) {
+            // Check if the product exists AND has ingredient text
+            if (data.status === 1 && data.product.ingredients_text && data.product.ingredients_text.trim() !== "") {
                 checkIngredientsForPhos(data.product.ingredients_text);
             } else {
-                alert("Product or ingredients not found in database.");
+                // Product exists but ingredients are empty, OR product doesn't exist
+                showUnknownState();
             }
+        })
+        .catch(err => {
+            console.error("API Error:", err);
+            showUnknownState();
         });
+}
+
+function showUnknownState() {
+    document.getElementById('scanner-warning').classList.add('hidden');
+    document.getElementById('scanner-success').classList.add('hidden');
+    document.getElementById('scanner-unknown').classList.remove('hidden');
 }
         init();
     </script>
