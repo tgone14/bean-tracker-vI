@@ -627,25 +627,18 @@ function startScanner() {
 let isProcessing = false; // Our 'State Lock'
 
 async function onScanSuccess(decodedText) {
-    // 1. If we are already busy, ignore any new 'ghost' scans
     if (isProcessing) return; 
     isProcessing = true; 
 
-    console.log("Scan detected:", decodedText);
-
     try {
-        // 2. Kill the camera immediately and wait for it to actually shut down
-        await html5QrCode.stop();
-        document.getElementById('reader').innerHTML = ""; 
+        // 'Clear' is often more reliable than 'stop' for releasing hardware quickly
+        await html5QrCode.clear(); 
         document.getElementById('scanner-section').classList.add('hidden');
         
-        // 3. Now that the hardware is off, fetch the data
         fetchProductData(decodedText);
-        
     } catch (err) {
-        console.error("Error during scanner shutdown:", err);
+        console.error("Scanner clear failed", err);
     } finally {
-        // 4. Release the lock after a short delay to prevent accidental double-taps
         setTimeout(() => { isProcessing = false; }, 2000);
     }
 }
