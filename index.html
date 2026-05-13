@@ -100,11 +100,11 @@
     <button onclick="stopScanner()" class="w-full mt-2 text-xs text-slate-400 font-bold uppercase">Close Scanner</button>
 </section>
 
-<!-- Add a button to open it in your Food Section -->
+        <section id="section-food" class="card p-5 space-y-4">
+            <!-- Add a button to open it in your Food Section -->
 <button onclick="startScanner()" class="w-full py-3 bg-slate-800 text-white rounded-2xl font-bold mb-4">
     Scan Barcode for Additives
 </button>
-        <section id="section-food" class="card p-5 space-y-4">
             <div class="relative">
                 <input type="text" id="food-search" placeholder="Search foods (Milk, Cheese, Egg)..." 
                     class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-purple-200" 
@@ -705,22 +705,23 @@ function stopScanner() {
             saveAll();
         }
      function fetchProductData(barcode) {
-    console.log("Fetching data for:", barcode); // Verification step
+    console.log("Fetching data for:", barcode);
+    
     fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`)
         .then(response => response.json())
         .then(data => {
-            console.log("JSON Data Received:", data); // See the actual ingredients list
+            console.log("JSON Data Received:", data);
+            // Check if product exists and has an ingredients list
             if (data.status === 1 && data.product.ingredients_text) {
                 checkIngredientsForPhos(data.product.ingredients_text);
             } else {
                 showUnknownState();
             }
-        });
-}
+        }) // The .then ends here
         .catch(err => {
             console.error("API Error:", err);
             showUnknownState();
-        });
+        }); // The .catch ends here, and is properly attached
 }
 
 function showUnknownState() {
@@ -728,7 +729,9 @@ function showUnknownState() {
     document.getElementById('scanner-success').classList.add('hidden');
     document.getElementById('scanner-unknown').classList.remove('hidden');
 }
-        init();
+
+// Initialize the app
+init();
     </script>
 </body>
 </html>
