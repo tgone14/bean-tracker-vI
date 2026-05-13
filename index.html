@@ -577,7 +577,49 @@ function checkIngredientsForPhos(ingredientsText) {
             dailyLog.push({ name: `${binderQty}x ${b.name}`, k: 0, p: -(b.bind * binderQty), f: 0, pr: 0, category: 'Binder', id: Date.now() });
             saveAll();
         }
+let html5QrCode; // Global variable so we can stop it later
 
+function startScanner() {
+    // 1. Show the scanner container
+    document.getElementById('scanner-section').classList.remove('hidden');
+
+    // 2. Initialize the scanner on the 'reader' div
+    html5QrCode = new Html5Qrcode("reader");
+
+    const config = { 
+        fps: 10, 
+        qrbox: { width: 250, height: 150 } // Shaped for barcodes
+    };
+
+    // 3. Start the camera
+    html5QrCode.start(
+        { facingMode: "environment" }, // Uses back camera on phones
+        config,
+        onScanSuccess
+    ).catch(err => {
+        console.error("Camera start error:", err);
+        alert("Camera access denied or not found.");
+    });
+}
+
+function onScanSuccess(decodedText, decodedResult) {
+    // When a barcode is found:
+    console.log(`Code scanned: ${decodedText}`);
+    
+    // Stop the camera so it doesn't keep scanning
+    stopScanner();
+    
+    // Send the barcode to our Open Food Facts function
+    fetchProductData(decodedText);
+}
+
+function stopScanner() {
+    if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+            document.getElementById('scanner-section').classList.add('hidden');
+        }).catch(err => console.error("Stop error:", err));
+    }
+}
         function exportData() {
             if (dailyLog.length === 0) { alert("No entries to export yet!"); return; }
             const date = new Date().toLocaleDateString();
