@@ -617,15 +617,27 @@ function startScanner() {
     });
 }
 
+let isScanning = false; 
+
 function onScanSuccess(decodedText, decodedResult) {
-    // When a barcode is found:
-    console.log(`Code scanned: ${decodedText}`);
-    
-    // Stop the camera so it doesn't keep scanning
-    stopScanner();
-    
-    // Send the barcode to our Open Food Facts function
-    fetchProductData(decodedText);
+    if (isScanning) return; 
+    isScanning = true; 
+
+    // 1. Immediately stop the scanner
+    html5QrCode.stop().then(() => {
+        // 2. Hide the camera box ONLY after it has fully stopped
+        document.getElementById('reader').innerHTML = ""; // Clear the camera feed
+        document.getElementById('scanner-section').classList.add('hidden');
+        
+        // 3. Trigger the data fetch
+        fetchProductData(decodedText);
+        
+        // 4. Release the lock after a 1-second "cool down"
+        setTimeout(() => { isScanning = false; }, 1000);
+    }).catch(err => {
+        console.error("Stop error:", err);
+        isScanning = false;
+    });
 }
 
 function stopScanner() {
