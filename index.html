@@ -704,18 +704,19 @@ function stopScanner() {
             Object.keys(foodDatabase).forEach(cat => cs.add(new Option(cat, cat)));
             saveAll();
         }
-      function fetchProductData(barcode) {
+     function fetchProductData(barcode) {
+    console.log("Fetching data for:", barcode); // Verification step
     fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`)
         .then(response => response.json())
         .then(data => {
-            // Check if the product exists AND has ingredient text
-            if (data.status === 1 && data.product.ingredients_text && data.product.ingredients_text.trim() !== "") {
+            console.log("JSON Data Received:", data); // See the actual ingredients list
+            if (data.status === 1 && data.product.ingredients_text) {
                 checkIngredientsForPhos(data.product.ingredients_text);
             } else {
-                // Product exists but ingredients are empty, OR product doesn't exist
                 showUnknownState();
             }
-        })
+        });
+}
         .catch(err => {
             console.error("API Error:", err);
             showUnknownState();
