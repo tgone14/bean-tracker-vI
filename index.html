@@ -434,14 +434,17 @@ function checkIngredientsForPhos(ingredientsText) {
     const text = ingredientsText.toLowerCase();
     const warningEl = document.getElementById('scanner-warning');
     
-    // Check our specific list or search for the "phos" substring
-    const hasAdditive = phosphateAdditives.some(additive => text.includes(additive)) || text.includes("phos");
+    // 1. Check if the broad "phos" string exists
+    const hasPhosString = text.includes("phos");
+    
+    // 2. Check if specific non-phos triggers like "lecithin" exist
+    const hasSpecificAdditive = phosphateAdditives.some(additive => text.includes(additive));
 
-    if (hasAdditive) {
+    if (hasPhosString || hasSpecificAdditive) {
         warningEl.classList.remove('hidden');
     } else {
         warningEl.classList.add('hidden');
-        alert("No common phosphate additives detected.");
+        // Optional: alert("Clear of common additives.");
     }
 }
         function searchFood(query) {
