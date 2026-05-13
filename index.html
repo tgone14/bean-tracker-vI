@@ -439,6 +439,7 @@ function updateUI() {
         label: reason
     };
 }
+let html5QrCode; // Global variable so we can stop it later
 function checkIngredientsForPhos(ingredientsText) {
     const text = ingredientsText.toLowerCase();
     const warningEl = document.getElementById('scanner-warning');
@@ -588,7 +589,6 @@ function checkIngredientsForPhos(ingredientsText) {
             dailyLog.push({ name: `${binderQty}x ${b.name}`, k: 0, p: -(b.bind * binderQty), f: 0, pr: 0, category: 'Binder', id: Date.now() });
             saveAll();
         }
-let html5QrCode; // Global variable so we can stop it later
 
 function startScanner() {
     // Clear previous results before starting
@@ -712,6 +712,7 @@ function stopScanner() {
         .then(data => {
             console.log("JSON Data Received:", data);
             // Check if product exists and has an ingredients list
+            console.log("API response status:", data.status)
             if (data.status === 1 && data.product.ingredients_text) {
                 checkIngredientsForPhos(data.product.ingredients_text);
             } else {
