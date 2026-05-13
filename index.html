@@ -617,27 +617,30 @@ function startScanner() {
     });
 }
 
-let isScanning = false; 
+let isProcessing = false; // Our 'State Lock'
 
-function onScanSuccess(decodedText, decodedResult) {
-    if (isScanning) return; 
-    isScanning = true; 
+async function onScanSuccess(decodedText) {
+    // 1. If we are already busy, ignore any new 'ghost' scans
+    if (isProcessing) return; 
+    isProcessing = true; 
 
-    // 1. Immediately stop the scanner
-    html5QrCode.stop().then(() => {
-        // 2. Hide the camera box ONLY after it has fully stopped
-        document.getElementById('reader').innerHTML = ""; // Clear the camera feed
+    console.log("Scan detected:", decodedText);
+
+    try {
+        // 2. Kill the camera immediately and wait for it to actually shut down
+        await html5QrCode.stop();
+        document.getElementById('reader').innerHTML = ""; 
         document.getElementById('scanner-section').classList.add('hidden');
         
-        // 3. Trigger the data fetch
+        // 3. Now that the hardware is off, fetch the data
         fetchProductData(decodedText);
         
-        // 4. Release the lock after a 1-second "cool down"
-        setTimeout(() => { isScanning = false; }, 1000);
-    }).catch(err => {
-        console.error("Stop error:", err);
-        isScanning = false;
-    });
+    } catch (err) {
+        console.error("Error during scanner shutdown:", err);
+    } finally {
+        // 4. Release the lock after a short delay to prevent accidental double-taps
+        setTimeout(() => { isProcessing = false; }, 2000);
+    }
 }
 
 function stopScanner() {
@@ -704,25 +707,25 @@ function stopScanner() {
             Object.keys(foodDatabase).forEach(cat => cs.add(new Option(cat, cat)));
             saveAll();
         }
-     function fetchProductData(barcode) {
-    console.log("Fetching data for:", barcode);
+    function fetchProductData(barcode) {
+    const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
     
-    fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`)
-        .then(response => response.json())
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error("Network response was not ok");
+            return response.json();
+        })
         .then(data => {
-            console.log("JSON Data Received:", data);
-            // Check if product exists and has an ingredients list
-            console.log("API response status:", data.status)
             if (data.status === 1 && data.product.ingredients_text) {
                 checkIngredientsForPhos(data.product.ingredients_text);
             } else {
                 showUnknownState();
             }
-        }) // The .then ends here
+        })
         .catch(err => {
-            console.error("API Error:", err);
+            console.error("Fetch error:", err);
             showUnknownState();
-        }); // The .catch ends here, and is properly attached
+        });
 }
 
 function showUnknownState() {
