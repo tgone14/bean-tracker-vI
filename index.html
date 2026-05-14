@@ -81,28 +81,37 @@
         <div class="flex space-x-1 bg-slate-200/50 p-1.5 rounded-2xl">
             <button onclick="switchTab('food')" id="tab-food" class="flex-1 py-2.5 rounded-xl font-bold text-sm bg-white shadow-sm text-slate-800 transition-all">Food</button>
             <button onclick="switchTab('binder')" id="tab-binder" class="flex-1 py-2.5 rounded-xl font-bold text-sm text-slate-500 transition-all">Binder</button>
-
         </div>
-        <section id="scanner-section" class="card p-4 hidden">
-    <div id="reader" style="width: 100%; border-radius: 16px; overflow: hidden;"></div>
-    <div id="scanner-warning" class="hidden mt-4 p-4 rounded-2xl bg-red-100 text-red-600 text-center font-black text-2xl">
-    ✕ PHOSPHATE ADDITIVE FOUND
-</div>
 
-<div id="scanner-success" class="hidden mt-4 p-4 rounded-2xl bg-green-100 text-green-700 text-center font-black text-2xl">
-    ✓ NO PHOSPHATE ADDITIVES DETECTED
-</div>
-    <div id="scanner-unknown" class="hidden mt-4 p-4 rounded-2xl bg-amber-100 text-amber-700 text-center font-bold text-lg">
-    ⚠️ INGREDIENTS NOT FOUND<br>
-    <span class="text-sm font-medium">Please check the physical label for \"PHOS\"</span>
-</div>
-    <button onclick="stopScanner()" class="w-full mt-2 text-xs text-slate-400 font-bold uppercase">Close Scanner</button>
-</section>
+        <section id="scanner-section" class="card p-4 hidden">
+            <div id="reader" style="width: 100%; border-radius: 16px; overflow: hidden;"></div>
+            <button onclick="stopScanner()" class="w-full mt-2 text-xs text-slate-400 font-bold uppercase">Close Scanner</button>
+        </section>
+
+        <div id="scan-result-display" class="card p-4 hidden">
+            <div id="scanner-warning" class="hidden p-4 rounded-2xl bg-red-100 text-red-600 text-center font-black text-2xl">
+                ✕ PHOSPHATE ADDITIVE FOUND
+            </div>
+            <div id="scanner-success" class="hidden p-4 rounded-2xl bg-green-100 text-green-700 text-center font-black text-2xl">
+                ✓ NO PHOSPHATE ADDITIVES DETECTED
+            </div>
+            <div id="scanner-unknown" class="hidden p-4 rounded-2xl bg-amber-100 text-amber-700 text-center font-bold text-lg">
+                ⚠️ INGREDIENTS NOT FOUND<br>
+                <span class="text-sm font-medium">Please check the physical label for "PHOS"</span>
+            </div>
+            <button onclick="hideResult()" class="w-full mt-2 text-xs text-slate-400 font-bold uppercase">Clear Result</button>
+        </div>
 
         <section id="section-food" class="card p-5 space-y-4">
-<button onclick="startScanner()" class="w-full py-3 bg-slate-800 text-white rounded-2xl font-bold mb-4">
-    Scan Barcode for Additives
-</button>
+            <button onclick="startScanner()" class="w-full py-3 bg-slate-800 text-white rounded-2xl font-bold mb-4">
+                Scan Barcode for Additives
+            </button>
+            <div class="mt-4 flex space-x-2">
+                <input type="text" id="manual-barcode" placeholder="Enter barcode manually..."
+                    class="flex-1 p-3 bg-slate-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-slate-300">
+                <button onclick="manualCheck()" class="px-4 bg-slate-800 text-white rounded-xl font-bold text-sm">Check</button>
+            </div>
+
             <div class="relative">
                 <input type="text" id="food-search" placeholder="Search foods (Milk, Cheese, Egg)..."
                     class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-purple-200"
@@ -339,13 +348,27 @@ function updateUI() {
         }
 
 let html5QrCode;
+function hideResult() {
+    document.getElementById('scan-result-display').classList.add('hidden');
+    ['warning','success','unknown'].forEach(id => document.getElementById('scanner-'+id).classList.add('hidden'));
+}
+
 function checkIngredientsForPhos(ingredientsText) {
     const text = ingredientsText.toLowerCase();
     const warningEl = document.getElementById('scanner-warning');
     const successEl = document.getElementById('scanner-success');
-    const hasPhosString = text.includes("phos");
-    const hasSpecificAdditive = phosphateAdditives.some(additive => text.includes(additive));
-    if (hasPhosString || hasSpecificAdditive) { warningEl.classList.remove('hidden'); successEl.classList.add('hidden'); } else { successEl.classList.remove('hidden'); warningEl.classList.add('hidden'); }
+    const resultDisplay = document.getElementById('scan-result-display');
+    
+    resultDisplay.classList.remove('hidden');
+    const hasPhos = text.includes("phos") || phosphateAdditives.some(additive => text.includes(additive));
+    
+    if (hasPhos) {
+        warningEl.classList.remove('hidden');
+        successEl.classList.add('hidden');
+    } else {
+        successEl.classList.remove('hidden');
+        warningEl.classList.add('hidden');
+    }
 }
         function searchFood(query) {
     const resultsDiv = document.getElementById('search-results');
@@ -419,11 +442,8 @@ function checkIngredientsForPhos(ingredientsText) {
         }
 
 function startScanner() {
-    document.getElementById('scanner-warning').classList.add('hidden');
-    document.getElementById('scanner-success').classList.add('hidden');
-    document.getElementById('scanner-unknown').classList.add('hidden');
+    hideResult();
     document.getElementById('scanner-section').classList.remove('hidden');
-
     html5QrCode = new Html5Qrcode("reader");
 
     const config = {
@@ -432,8 +452,6 @@ function startScanner() {
         aspectRatio: 1.0,
         videoConstraints: {
             facingMode: "environment",
-            width: { min: 640, ideal: 1920, max: 1920 },
-            height: { min: 480, ideal: 1080, max: 1080 },
             advanced: [
                 { focusMode: "continuous" },
                 { zoom: 2.0 }
@@ -442,22 +460,31 @@ function startScanner() {
     };
 
     html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess).catch(err => {
-        // Optimized: Immediately catch ConstraintNotSatisfiedError which is common for zoom/focus
-        if (err.name === "OverconstrainedError" || err.name === "ConstraintNotSatisfiedError") {
-             console.warn("Device rejected advanced constraints, retrying with basic config.");
-        } else {
-             console.error("Scanner start failed:", err);
-        }
-        
-        // Basic configuration fallback ensures camera works regardless of zoom support
         html5QrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: 250 }, onScanSuccess);
     });
+}
+
+function manualCheck() {
+    const code = document.getElementById('manual-barcode').value.trim();
+    if (code) fetchProductData(code);
 }
 
 let isProcessing = false;
 async function onScanSuccess(decodedText) {
     if (isProcessing) return; isProcessing = true;
-    try { await html5QrCode.clear(); document.getElementById('scanner-section').classList.add('hidden'); fetchProductData(decodedText); } catch (err) { console.error(err); } finally { setTimeout(() => { isProcessing = false; }, 2000); }
+    try {
+        // Process and display results immediately before shutting down hardware
+        await fetchProductData(decodedText);
+        
+        // Now shut down the camera
+        await html5QrCode.stop();
+        document.getElementById('scanner-section').classList.add('hidden');
+    } catch (err) {
+        console.error("Scanner refactor error:", err);
+        document.getElementById('scanner-section').classList.add('hidden');
+    } finally {
+        setTimeout(() => { isProcessing = false; }, 2000);
+    }
 }
 
 function stopScanner() {
@@ -498,12 +525,27 @@ function stopScanner() {
             document.getElementById('disp-limit-k').textContent = limits.k; document.getElementById('disp-limit-p').textContent = limits.p; document.getElementById('disp-limit-f').textContent = limits.f; document.getElementById('disp-limit-pr').textContent = limits.pr || 60;
             const cs = document.getElementById('category-select'); Object.keys(foodDatabase).forEach(cat => cs.add(new Option(cat, cat))); saveAll();
         }
-    function fetchProductData(barcode) {
+    async function fetchProductData(barcode) {
     const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
-    fetch(url).then(response => { if (!response.ok) throw new Error("Network error"); return response.json(); })
-        .then(data => { if (data.status === 1 && data.product.ingredients_text) { checkIngredientsForPhos(data.product.ingredients_text); } else { showUnknownState(); } }).catch(err => { console.error(err); showUnknownState(); });
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Network error");
+        const data = await response.json();
+        if (data.status === 1 && data.product.ingredients_text) {
+            checkIngredientsForPhos(data.product.ingredients_text);
+        } else {
+            showUnknownState();
+        }
+    } catch (err) {
+        showUnknownState();
+    }
 }
-function showUnknownState() { document.getElementById('scanner-warning').classList.add('hidden'); document.getElementById('scanner-success').classList.add('hidden'); document.getElementById('scanner-unknown').classList.remove('hidden'); }
+function showUnknownState() {
+    document.getElementById('scan-result-display').classList.remove('hidden');
+    document.getElementById('scanner-warning').classList.add('hidden');
+    document.getElementById('scanner-success').classList.add('hidden');
+    document.getElementById('scanner-unknown').classList.remove('hidden');
+}
 init();
     </script>
 </body>
