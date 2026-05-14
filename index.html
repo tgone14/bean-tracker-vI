@@ -53,10 +53,19 @@
 
         <section id="scanner-section" class="card p-4 hidden">
             <div id="reader" style="width: 100%; border-radius: 16px; overflow: hidden;"></div>
+
+            <div class="mt-4 flex space-x-2">
+                <input type="number" id="manual-barcode" placeholder="Type barcode digits..." class="flex-1 p-3 bg-slate-50 border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-200">
+                <button onclick="manualSearch()" class="bg-slate-800 text-white px-4 py-2 rounded-xl font-bold text-xs uppercase">Check</button>
+            </div>
+
             <div id="scanner-result-area" class="mt-4">
                 <div id="scanner-warning" class="hidden p-4 rounded-2xl bg-red-100 text-red-600 text-center font-black text-2xl">✕ PHOSPHATE ADDITIVE</div>
                 <div id="scanner-success" class="hidden p-4 rounded-2xl bg-green-100 text-green-700 text-center font-black text-2xl">✓ NO PHOSPHATES</div>
-                <div id="scanner-unknown" class="hidden p-4 rounded-2xl bg-amber-100 text-amber-700 text-center font-bold text-lg">⚠️ PRODUCT NOT FOUND</div>
+                <div id="scanner-unknown" class="hidden p-4 rounded-2xl bg-amber-50 border-2 border-dashed border-amber-200 text-amber-800 text-center">
+                    <div class="font-black text-xl mb-1">⚠️ PRODUCT NOT FOUND</div>
+                    <div class="text-xs font-bold opacity-80 uppercase tracking-tighter">Please manually check the label ingredients for any "PHOS" words.</div>
+                </div>
             </div>
             <button onclick="stopScanner()" class="w-full mt-4 py-3 bg-slate-800 text-white font-bold uppercase rounded-2xl">Close Scanner</button>
         </section>
@@ -171,7 +180,7 @@
             { name: "Peppers, Green (1/2 cup)", k: 80, p: 9, f: 0, pr: 0.4 },
             { name: "Potato, Baked", k: 941, p: 130, f: 0, pr: 1.25 },
             { name: "Plantain, Boiled (1 cup)", k: 396, p: 32, f: 0, pr: 1.5 },
-            { name: "Fried Plantains (1/2 cup)", k: 465, p: 43, f: 0, pr: 1.0 }, 
+            { name: "Fried Plantains (1/2 cup)", k: 465, p: 43, f: 0, pr: 1.0 },
             { name: "Spinach, Raw (1 cup)", k: 167, p: 14, f: 0, pr: 0.9 },
             { name: "Sweet Potato, Baked", k: 542, p: 61, f: 0, pr: 2.3 },
             { name: "Tomato Sauce (1/2 cup)", k: 364, p: 33, f: 0, pr: 1.5 },
@@ -204,7 +213,7 @@
             { name: "Egg (1)", k: 66, p: 92, f: 0, pr: 6.25 },
             { name: "Ground Beef (3 oz)", k: 300, p: 181, f: 0, pr: 21 },
             { name: "Hot Dog, Beef", k: 186, p: 70, f: 0, pr: 7 },
-            { name: "Mussels", k: 228, p: 242, f: 0, pr: 20 }, 
+            { name: "Mussels", k: 228, p: 242, f: 0, pr: 20 },
             { name: "Salmon (3 oz)", k: 373, p: 266, f: 0, pr: 21 },
             { name: "Sardines (3 oz)", k: 338, p: 417, f: 0, pr: 21 },
             { name: "Tuna Salad (1/2 cup)", k: 180, p: 145, f: 0, pr: 16 },
@@ -222,11 +231,11 @@
     };
 
     const binderDatabase = [
-        { name: "Renvela/Sevelamer (800mg)", bind: 17 }, 
+        { name: "Renvela/Sevelamer (800mg)", bind: 17 },
         { name: "Phoslo/Calcium Acetate (667mg)", bind: 30 },
-        { name: "Tums/Calcium Carbonate (500mg)", bind: 19 }, 
+        { name: "Tums/Calcium Carbonate (500mg)", bind: 19 },
         { name: "Velphoro (500mg)", bind: 130 },
-        { name: "Auryxia (210mg Iron)", bind: 40 }, 
+        { name: "Auryxia (210mg Iron)", bind: 40 },
         { name: "Fosrenol/Lanthanum (500mg)", bind: 45 },
         { name: "Fosrenol/Lanthanum (750mg)", bind: 67.5 }
     ];
@@ -247,7 +256,7 @@
         const t = translations[currentLang];
         document.getElementById('lang-btn').innerText = t.langBtn;
         document.getElementById('current-date').textContent = new Date().toLocaleDateString(currentLang === 'en' ? 'en-US' : 'es-ES', { weekday: 'long', month: 'short', day: 'numeric' });
-        
+
         let tk=0, tp=0, tf=0, tpr=0;
         dailyLog.forEach(i => { tk += i.k; tp += i.p; tf += i.f; tpr += (i.pr || 0); });
 
@@ -342,22 +351,27 @@
         resetScannerUI();
         document.getElementById('scanner-section').classList.remove('hidden');
         if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-        
-        const config = { 
-            fps: 15, 
+
+        const config = {
+            fps: 15,
             qrbox: { width: 250, height: 150 },
             rememberLastUsedCamera: true,
             aspectRatio: 1.7777777778,
-            videoConstraints: { 
+            videoConstraints: {
                 facingMode: "environment",
                 focusMode: "continuous",
                 width: { ideal: 1280 },
                 height: { ideal: 720 }
-            } 
+            }
         };
-        
+
         html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
             .catch(err => alert("Camera access denied. Please allow camera access to scan."));
+    }
+
+    function manualSearch() {
+        const code = document.getElementById('manual-barcode').value;
+        if (code) onScanSuccess(code);
     }
 
     async function onScanSuccess(decodedText) {
@@ -396,6 +410,7 @@
     </script>
 </body>
 </html>
+
 
 
 
