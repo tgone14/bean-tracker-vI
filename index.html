@@ -21,8 +21,8 @@
         .dot-green { background-color: #22c55e; }
         .dot-yellow { background-color: #eab308; }
         .dot-red { background-color: #ef4444; }
-        #reader { position: relative; z-index: 50; min-height: 250px; background: #000; }
-        #reader video { object-fit: cover !important; }
+        #reader { position: relative; z-index: 50; min-height: 250px; background: #000; display: block !important; }
+        #reader video { object-fit: cover !important; width: 100% !important; height: auto !important; min-height: 250px !important; }
     </style>
 </head>
 <body class="pb-24">
@@ -342,8 +342,18 @@
         resetScannerUI();
         document.getElementById('scanner-section').classList.remove('hidden');
         if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-        // Optimized for mobile browsers (using environment facingMode and higher fps constraint)
-        const config = { fps: 15, qrbox: { width: 250, height: 150 }, videoConstraints: { facingMode: "environment" } };
+        
+        const config = { 
+            fps: 15, 
+            qrbox: { width: 250, height: 150 }, 
+            videoConstraints: { 
+                facingMode: "environment",
+                width: { min: 640, ideal: 1280, max: 1920 },
+                height: { min: 480, ideal: 720, max: 1080 },
+                aspectRatio: { ideal: 1.7777777778 }
+            } 
+        };
+        
         html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
             .catch(err => alert("Camera access denied. Please allow camera access to scan."));
     }
@@ -384,6 +394,7 @@
     </script>
 </body>
 </html>
+
 
 
 
