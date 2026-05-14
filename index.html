@@ -21,6 +21,8 @@
         .dot-green { background-color: #22c55e; }
         .dot-yellow { background-color: #eab308; }
         .dot-red { background-color: #ef4444; }
+        #reader { position: relative; z-index: 50; min-height: 250px; background: #000; }
+        #reader video { object-fit: cover !important; }
     </style>
 </head>
 <body class="pb-24">
@@ -56,11 +58,11 @@
                 <div id="scanner-success" class="hidden p-4 rounded-2xl bg-green-100 text-green-700 text-center font-black text-2xl">✓ NO PHOSPHATES</div>
                 <div id="scanner-unknown" class="hidden p-4 rounded-2xl bg-amber-100 text-amber-700 text-center font-bold text-lg">⚠️ PRODUCT NOT FOUND</div>
             </div>
-            <button onclick="stopScanner()" class="w-full mt-4 py-2 bg-slate-100 text-xs text-slate-500 font-bold uppercase rounded-xl">Close Scanner</button>
+            <button onclick="stopScanner()" class="w-full mt-4 py-3 bg-slate-800 text-white font-bold uppercase rounded-2xl">Close Scanner</button>
         </section>
 
         <section id="section-food" class="card p-5 space-y-4">
-            <button onclick="startScanner()" class="w-full py-3 bg-slate-800 text-white rounded-2xl font-bold mb-4 shadow-lg active:scale-95 transition-transform">Scan Barcode for Additives</button>
+            <button onclick="startScanner()" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-bold mb-4 shadow-lg active:scale-95 transition-transform">Scan Barcode for Additives</button>
             <div class="relative">
                 <input type="text" id="food-search" onkeyup="searchFood(this.value)" placeholder="Search foods..." class="w-full p-4 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-purple-200">
                 <div id="search-results" class="hidden absolute z-30 w-full bg-white border rounded-2xl shadow-2xl mt-2 max-h-72 overflow-y-auto"></div>
@@ -112,7 +114,7 @@
 
     <script>
     const phosphateAdditives = ["phosphoric acid","sodium aluminum phosphate","pyrophosphate","polyphosphate","triphosphate","trimetaphosphate","hexametaphosphate","dicalcium phosphate","monocalcium phosphate","tricalcium phosphate","soy lecithin","lecithin"];
-    
+
     const foodDatabase = {
         "Fruits": [
             { name: "Apple (1 med)", k: 133, p: 12, f: 0, pr: 0.25 },
@@ -140,7 +142,7 @@
             { name: "Cheddar Cheese (1 oz)", k: 21, p: 129, f: 0, pr: 7 },
             { name: "Cottage Cheese, Lowfat 2% (1/2 cup)", k: 86, p: 150, f: 0, pr: 12 },
             { name: "Cream Cheese, Lowfat (1 tbsp)", k: 50, p: 94, f: 0, pr: 2.8 },
-            { name: "Greek Yogurt, Vanilla (6 oz)", k: 184, p: 178, f: 150, pr: 15.0 }, 
+            { name: "Greek Yogurt, Vanilla (6 oz)", k: 184, p: 178, f: 150, pr: 15.0 },
             { name: "Milk, Whole (1 cup)", k: 374, p: 251, f: 240, pr: 8.1 },
             { name: "Milk, Reduced Fat 2% (1 cup)", k: 390, p: 252, f: 240, pr: 8.2 },
             { name: "Milk, Lowfat 1% (1 cup)", k: 391, p: 253, f: 240, pr: 8.3 },
@@ -286,8 +288,8 @@
             foods.forEach(food => {
                 if (food.name.toLowerCase().includes(query.toLowerCase())) {
                     const r = getRiskLevel(food);
-                    html += `<div onclick='logFoodItem(${JSON.stringify(food)}, "${cat}")' class="search-item flex justify-between items-center">
-                        <div><div class="font-bold text-sm">${food.name}</div><div class="text-[9px] opacity-50">${cat}</div></div>
+                    html += `<div onclick='logFoodItem(${JSON.stringify(food)}, "${cat}")' class="p-4 border-b hover:bg-slate-50 cursor-pointer flex justify-between items-center">
+                        <div><div class="font-bold text-sm">${food.name}</div><div class="text-[9px] opacity-50 uppercase">${cat}</div></div>
                         <div class="w-3 h-3 rounded-full ${r.dotClass}"></div>
                     </div>`;
                 }
@@ -340,8 +342,10 @@
         resetScannerUI();
         document.getElementById('scanner-section').classList.remove('hidden');
         if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 150 } }, onScanSuccess)
-            .catch(err => alert("Camera access denied"));
+        // Optimized for mobile browsers (using environment facingMode and higher fps constraint)
+        const config = { fps: 15, qrbox: { width: 250, height: 150 }, videoConstraints: { facingMode: "environment" } };
+        html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess)
+            .catch(err => alert("Camera access denied. Please allow camera access to scan."));
     }
 
     async function onScanSuccess(decodedText) {
@@ -362,7 +366,7 @@
     }
 
     function resetScannerUI() { ["scanner-warning","scanner-success","scanner-unknown"].forEach(id => document.getElementById(id).classList.add('hidden')); }
-    function stopScanner() { if(html5QrCode) html5QrCode.stop().then(() => document.getElementById('scanner-section').classList.add('hidden')); }
+    function stopScanner() { if(html5QrCode) html5QrCode.stop().then(() => document.getElementById('scanner-section').classList.add('hidden')).catch(() => document.getElementById('scanner-section').classList.add('hidden')); }
     function toggleLanguage() { currentLang = currentLang === 'en' ? 'es' : 'en'; updateUI(); }
     function switchTab(t) { ['food', 'binder'].forEach(tab => { document.getElementById(`section-${tab}`).classList.toggle('hidden', t !== tab); const btn = document.getElementById(`tab-${tab}`); btn.className = t===tab ? "flex-1 py-2.5 rounded-xl font-bold text-sm bg-white shadow-sm text-slate-800" : "flex-1 py-2.5 rounded-xl font-bold text-sm text-slate-500"; }); }
     function changeQty(amt) { binderQty = Math.max(1, binderQty + amt); document.getElementById('binder-qty-display').textContent = binderQty; }
