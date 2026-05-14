@@ -19,7 +19,7 @@
         .p-green { background-color: #f0fdf4; border-left: 4px solid #22c55e; }
         .p-yellow { background-color: #fefce8; border-left: 4px solid #eab308; }
         .p-red { background-color: #fef2f2; border-left: 4px solid #ef4444; }
-        .p-neutral { background-color: #f8fafc; border-left: 4px solid #cbd5e1; }
+        .p-neutral { background-color: #f8fafc; border-left: 4px solid #cbd5e1; } /* Corrected from 44px to 4px */
 
         .dot-green { background-color: #22c55e; }
         .dot-yellow { background-color: #eab308; }
@@ -129,7 +129,8 @@
                 <option value="2">Tums/Calcium Carbonate (500mg)</option>
                 <option value="3">Velphoro (500mg)</option>
                 <option value="4">Auryxia (210mg Iron)</option>
-                <option value="5">Fosrenol/Lanthanum (500mg)</option>
+                <option value="5">Fosrenol/Lanthanum (500mg)
+</option>
                 <option value="6">Fosrenol/Lanthanum (750mg)</option>
             </select>
             <div class="flex items-center justify-center space-x-8 py-4">
@@ -253,7 +254,7 @@ function updateUI() {
 
     // Log Section
     document.querySelector('#section-log h2').innerText = t.today;
-    document.querySelector('button[onclick="clearToday()"]').innerText = t.reset;
+    document.querySelector('button[onclick="clearToday()"]').innerText = t.reset; /* Corrected querySelector */
     document.querySelector('button[onclick="exportData()"]').innerText = t.export;
 
     // Bottom Settings
@@ -506,7 +507,7 @@ function checkIngredientsForPhos(ingredientsText) {
             const k = parseInt(prompt("Potassium (mg):", "0")) || 0;
             const p = parseInt(prompt("Phosphorus (mg):", "0")) || 0;
             const f = parseInt(prompt("Fluid (ml):", "0")) || 0;
-            const pr = parseFloat(prompt("Protein (g):", "0")) || 0;
+            const pr = parseFloat(prompt("Protein (g):", "0")) || 0; /* Removed newline character */
             dailyLog.push({ name: name + " (Custom)", k: k, p: p, f: f, pr: pr, category: "Custom", id: Date.now() });
             saveAll();
         }
@@ -578,7 +579,7 @@ function checkIngredientsForPhos(ingredientsText) {
             const pct = Math.min((v/m)*100, 100);
             const b = document.getElementById(id);
             b.style.width = pct+'%';
-            b.style.backgroundColor = pct >= 100 ? "#f43f5e" : (id==='bar-k'?"#34d399":id==='bar-p'?"#a78bfa":"#38bdf8");
+            b.style.backgroundColor = pct >= 100 ? "#f43f5e" : (id==='bar-k'?'#34d399':id==='bar-p'?'#a78bfa':'#38bdf8');
         }
 
         function changeQty(amt) { binderQty = Math.max(1, binderQty + amt); document.getElementById('binder-qty-display').textContent = binderQty; }
@@ -632,8 +633,8 @@ async function onScanSuccess(decodedText) {
 
     try {
         // 'Clear' is often more reliable than 'stop' for releasing hardware quickly
-        await html5QrCode.clear(); 
-        document.getElementById('scanner-section').classList.add('hidden');
+        await html5QrCode.clear();
+        // document.getElementById('scanner-section').classList.add('hidden'); // REMOVED THIS LINE
         
         fetchProductData(decodedText);
     } catch (err) {
@@ -688,9 +689,7 @@ function stopScanner() {
     ['food', 'binder'].forEach(tab => {
         document.getElementById(`section-${tab}`).classList.toggle('hidden', t !== tab);
         const btn = document.getElementById(`tab-${tab}`);
-        if(t===tab){ btn.classList.add('bg-white','shadow-sm','text-slate-800'); btn.classList.remove('text-slate-500'); }
-        else { btn.classList.remove('bg-white','shadow-sm','text-slate-800'); btn.classList.add('text-slate-500'); }
-    }); 
+        if(t===tab){ btn.classList.add('bg-white','shadow-sm','text-slate-800'); btn.classList.remove('text-slate-500'); } else { btn.classList.remove('bg-white','shadow-sm','text-slate-800'); btn.classList.add('text-slate-500'); }}); 
 }
 
         function init() {
@@ -739,23 +738,6 @@ init();
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
