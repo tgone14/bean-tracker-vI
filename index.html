@@ -345,12 +345,14 @@
         
         const config = { 
             fps: 15, 
-            qrbox: { width: 250, height: 150 }, 
+            qrbox: { width: 250, height: 150 },
+            rememberLastUsedCamera: true,
+            aspectRatio: 1.7777777778,
             videoConstraints: { 
                 facingMode: "environment",
-                width: { min: 640, ideal: 1280, max: 1920 },
-                height: { min: 480, ideal: 720, max: 1080 },
-                aspectRatio: { ideal: 1.7777777778 }
+                focusMode: "continuous",
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
             } 
         };
         
@@ -394,7 +396,6 @@
     </script>
 </body>
 </html>
-
 
 
 
