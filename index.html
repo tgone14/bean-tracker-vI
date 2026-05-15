@@ -89,8 +89,9 @@
         </section>
 
         <div id="scan-result-display" class="card p-4 hidden">
-            <div id="scanner-warning" class="hidden p-4 rounded-2xl bg-red-100 text-red-600 text-center font-black text-2xl">
-                ✕ PHOSPHATE ADDITIVE FOUND
+            <div id="scanner-warning" class="hidden p-4 rounded-2xl bg-red-100 text-red-600 text-center">
+                <div class="font-black text-2xl">✕ PHOSPHATE ADDITIVE FOUND</div>
+                <div id="found-additive-name" class="text-sm font-bold mt-1 uppercase opacity-70"></div>
             </div>
             <div id="scanner-success" class="hidden p-4 rounded-2xl bg-green-100 text-green-700 text-center font-black text-2xl">
                 ✓ NO PHOSPHATE ADDITIVES DETECTED
@@ -357,14 +358,22 @@ function checkIngredientsForPhos(ingredientsText) {
     const text = ingredientsText.toLowerCase();
     const warningEl = document.getElementById('scanner-warning');
     const successEl = document.getElementById('scanner-success');
+    const nameEl = document.getElementById('found-additive-name');
     const resultDisplay = document.getElementById('scan-result-display');
-    
+
     resultDisplay.classList.remove('hidden');
-    const hasPhos = text.includes("phos") || phosphateAdditives.some(additive => text.includes(additive));
     
-    if (hasPhos) {
+    // Search for a specific additive name or generic "phos"
+    let detectedAdditive = "";
+    if (text.includes("phos")) detectedAdditive = "PHOSPHORUS DETECTED";
+    
+    const foundMatch = phosphateAdditives.find(additive => text.includes(additive.toLowerCase()));
+    if (foundMatch) detectedAdditive = foundMatch;
+
+    if (detectedAdditive) {
         warningEl.classList.remove('hidden');
         successEl.classList.add('hidden');
+        nameEl.innerText = detectedAdditive;
     } else {
         successEl.classList.remove('hidden');
         warningEl.classList.add('hidden');
@@ -475,7 +484,7 @@ async function onScanSuccess(decodedText) {
     try {
         // Process and display results immediately before shutting down hardware
         await fetchProductData(decodedText);
-        
+
         // Now shut down the camera
         await html5QrCode.stop();
         document.getElementById('scanner-section').classList.add('hidden');
