@@ -362,18 +362,19 @@ function checkIngredientsForPhos(ingredientsText) {
     const resultDisplay = document.getElementById('scan-result-display');
 
     resultDisplay.classList.remove('hidden');
-    
-    // Search for a specific additive name or generic "phos"
-    let detectedAdditive = "";
-    if (text.includes("phos")) detectedAdditive = "PHOSPHORUS DETECTED";
-    
-    const foundMatch = phosphateAdditives.find(additive => text.includes(additive.toLowerCase()));
-    if (foundMatch) detectedAdditive = foundMatch;
 
-    if (detectedAdditive) {
+    // Find ALL matching additives
+    let matches = phosphateAdditives.filter(additive => text.includes(additive.toLowerCase()));
+    
+    // Also check for generic 'phos' if no specific match found
+    if (matches.length === 0 && text.includes("phos")) {
+        matches = ["PHOSPHORUS DETECTED"];
+    }
+
+    if (matches.length > 0) {
         warningEl.classList.remove('hidden');
         successEl.classList.add('hidden');
-        nameEl.innerText = detectedAdditive;
+        nameEl.innerText = matches.join(", ");
     } else {
         successEl.classList.remove('hidden');
         warningEl.classList.add('hidden');
