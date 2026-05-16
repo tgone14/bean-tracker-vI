@@ -365,7 +365,7 @@ function checkIngredientsForPhos(ingredientsText) {
 
     // Find ALL matching additives
     let matches = phosphateAdditives.filter(additive => text.includes(additive.toLowerCase()));
-    
+
     // Also check for generic 'phos' if no specific match found
     if (matches.length === 0 && text.includes("phos")) {
         matches = ["PHOSPHORUS DETECTED"];
@@ -503,7 +503,7 @@ function stopScanner() {
         function exportData() {
             if (dailyLog.length === 0) { alert("No entries to export!"); return; }
             const date = new Date().toLocaleDateString(); let tk=0, tp=0, tf=0, tpr=0; let foodList = "";
-            dailyLog.forEach(i => { tk += i.k; tp += i.p; tf += i.f; tpr += (i.pr || 0); foodList += `- ${i.name} (K: ${i.k}, P: ${i.p}, F: ${i.f}, PRO: ${i.pr})\n`; });
+            dailyLog.forEach(i => { tk += i.k; tp += i.p; tf += i.f; tpr += (i.pr || 0); foodList += `- ${i.name} (K: ${i.k}, P: ${i.p}, f: ${i.f}, PRO: ${i.pr})\n`; });
             const message = `Bean Dialysis Report - ${date}\n--------------------------\nTOTALS:\nPotassium: ${tk}mg\nPhosphorus: ${tp}mg\nFluid: ${tf}ml\nProtein: ${tpr.toFixed(1)}g\n\nENTRIES:\n${foodList}`;
             if (navigator.share) { navigator.share({ title: `Bean Report ${date}`, text: message }).catch(console.error); } else { navigator.clipboard.writeText(message); alert("Report copied to clipboard!"); }
         }
@@ -535,21 +535,30 @@ function stopScanner() {
             document.getElementById('disp-limit-k').textContent = limits.k; document.getElementById('disp-limit-p').textContent = limits.p; document.getElementById('disp-limit-f').textContent = limits.f; document.getElementById('disp-limit-pr').textContent = limits.pr || 60;
             const cs = document.getElementById('category-select'); Object.keys(foodDatabase).forEach(cat => cs.add(new Option(cat, cat))); saveAll();
         }
-    async function fetchProductData(barcode) {
-    const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
+
+async function fetchProductData(barcode) {
+    const url = `https://world.openfoodfacts.org/api/v2/product/${barcode}.json?fields=ingredients_text,product_name`;
     try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Network error");
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': 'BeanDialysisTracker/1.2 (Web; https://github.com/YourUsername/YourRepoName)'
+            }
+        });
+        if (!response.ok) throw new Error("Status: " + response.status);
         const data = await response.json();
-        if (data.status === 1 && data.product.ingredients_text) {
+        
+        if (data.product && data.product.ingredients_text) {
             checkIngredientsForPhos(data.product.ingredients_text);
         } else {
+            console.log("Ingredients field missing for barcode:", barcode);
             showUnknownState();
         }
     } catch (err) {
+        console.error("OpenFoodFacts API Error:", err);
         showUnknownState();
     }
 }
+
 function showUnknownState() {
     document.getElementById('scan-result-display').classList.remove('hidden');
     document.getElementById('scanner-warning').classList.add('hidden');
