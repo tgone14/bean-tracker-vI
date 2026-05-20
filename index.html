@@ -98,7 +98,7 @@
             </div>
             <div id="scanner-unknown" class="hidden p-4 rounded-2xl bg-amber-100 text-amber-700 text-center font-bold text-lg">
                 ⚠️ INGREDIENTS NOT FOUND<br>
-                <span class="text-sm font-medium">Please check the physical label for "PHOS"</span>
+                <span class="text-sm font-medium">Please check the physical label for \"PHOS\"</span>
             </div>
             <button onclick="hideResult()" class="w-full mt-2 text-xs text-slate-400 font-bold uppercase">Clear Result</button>
         </div>
@@ -536,8 +536,21 @@ function stopScanner() {
             const cs = document.getElementById('category-select'); Object.keys(foodDatabase).forEach(cat => cs.add(new Option(cat, cat))); saveAll();
         }
 
+/**
+ * Normalizes barcodes to 13-digit EAN-13 format.
+ * North American UPC codes are 12 digits; adding a leading '0' aligns them with EAN-13.
+ */
+function normalizeBarcode(code) {
+    let cleanCode = code.toString().trim();
+    if (cleanCode.length === 12) {
+        return '0' + cleanCode;
+    }
+    return cleanCode;
+}
+
 async function fetchProductData(barcode) {
-    const url = `https://world.openfoodfacts.org/api/v2/product/${barcode}.json?fields=ingredients_text,product_name`;
+    const finalBarcode = normalizeBarcode(barcode);
+    const url = `https://world.openfoodfacts.org/api/v2/product/${finalBarcode}.json?fields=ingredients_text,product_name`;
     try {
         const response = await fetch(url, {
             headers: {
@@ -546,11 +559,11 @@ async function fetchProductData(barcode) {
         });
         if (!response.ok) throw new Error("Status: " + response.status);
         const data = await response.json();
-        
+
         if (data.product && data.product.ingredients_text) {
             checkIngredientsForPhos(data.product.ingredients_text);
         } else {
-            console.log("Ingredients field missing for barcode:", barcode);
+            console.log("Ingredients field missing for barcode:", finalBarcode);
             showUnknownState();
         }
     } catch (err) {
