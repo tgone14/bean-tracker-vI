@@ -98,7 +98,7 @@
             </div>
             <div id="scanner-unknown" class="hidden p-4 rounded-2xl bg-amber-100 text-amber-700 text-center font-bold text-lg">
                 ⚠️ INGREDIENTS NOT FOUND<br>
-                <span class="text-sm font-medium">Please check the physical label for \"PHOS\"</span>
+                <span class="text-sm font-medium">Please check the physical label for "PHOS"</span>
             </div>
             <button onclick="hideResult()" class="w-full mt-2 text-xs text-slate-400 font-bold uppercase">Clear Result</button>
         </div>
@@ -196,10 +196,10 @@ function updateUI() {
     document.getElementById('binder-select').options[0].text = t.selectBinder;
     document.getElementById('add-binder-btn').innerText = t.addBinder;
     document.querySelector('#section-log h2').innerText = t.today;
-    document.querySelector('button[onclick="clearToday()"]').innerText = t.reset;
-    document.querySelector('button[onclick="exportData()"]').innerText = t.export;
+    document.querySelector('button[onclick="clearToday()"').innerText = t.reset;
+    document.querySelector('button[onclick="exportData()"').innerText = t.export;
     document.querySelector('h3.text-xs').innerText = t.limits;
-    document.querySelector('button[onclick="addCustomFood()"]').innerText = t.custom;
+    document.querySelector('button[onclick="addCustomFood()"').innerText = t.custom;
     renderLog();
 }
 
@@ -366,6 +366,7 @@ function checkIngredientsForPhos(ingredientsText) {
     // Find ALL matching additives
     let matches = phosphateAdditives.filter(additive => text.includes(additive.toLowerCase()));
 
+
     // Also check for generic 'phos' if no specific match found
     if (matches.length === 0 && text.includes("phos")) {
         matches = ["PHOSPHORUS DETECTED"];
@@ -503,7 +504,7 @@ function stopScanner() {
         function exportData() {
             if (dailyLog.length === 0) { alert("No entries to export!"); return; }
             const date = new Date().toLocaleDateString(); let tk=0, tp=0, tf=0, tpr=0; let foodList = "";
-            dailyLog.forEach(i => { tk += i.k; tp += i.p; tf += i.f; tpr += (i.pr || 0); foodList += `- ${i.name} (K: ${i.k}, P: ${i.p}, f: ${i.f}, PRO: ${i.pr})\n`; });
+            dailyLog.forEach(i => { tk += i.k; tp += i.p; tf += i.f; tpr += (i.pr || 0); foodList += `- ${i.name} (K: ${i.k}, P: ${i.p}, F: ${i.f}, PRO: ${i.pr})\n`; });
             const message = `Bean Dialysis Report - ${date}\n--------------------------\nTOTALS:\nPotassium: ${tk}mg\nPhosphorus: ${tp}mg\nFluid: ${tf}ml\nProtein: ${tpr.toFixed(1)}g\n\nENTRIES:\n${foodList}`;
             if (navigator.share) { navigator.share({ title: `Bean Report ${date}`, text: message }).catch(console.error); } else { navigator.clipboard.writeText(message); alert("Report copied to clipboard!"); }
         }
@@ -535,7 +536,6 @@ function stopScanner() {
             document.getElementById('disp-limit-k').textContent = limits.k; document.getElementById('disp-limit-p').textContent = limits.p; document.getElementById('disp-limit-f').textContent = limits.f; document.getElementById('disp-limit-pr').textContent = limits.pr || 60;
             const cs = document.getElementById('category-select'); Object.keys(foodDatabase).forEach(cat => cs.add(new Option(cat, cat))); saveAll();
         }
-
 /**
  * Normalizes barcodes to 13-digit EAN-13 format.
  * North American UPC codes are 12 digits; adding a leading '0' aligns them with EAN-13.
